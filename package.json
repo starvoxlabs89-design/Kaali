@@ -1,5 +1,5 @@
 {
-  "name": "@starvoxlabs/vigil",
+  "name": "@starvoxlabs89-design/vigil",
   "version": "0.1.0",
   "description": "Open-source security scanner for AI agents, LLM apps & MCP servers — prompt injection, exposed MCP, secrets & PII. DPDP-ready. By Starvox Labs.",
   "type": "module",
@@ -29,10 +29,10 @@
   "homepage": "https://starvoxlabs.io",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/starvoxlabs/vigil.git"
+    "url": "git+https://github.com/starvoxlabs89-design/vigil.git"
   },
   "bugs": {
-    "url": "https://github.com/starvoxlabs/vigil/issues"
+    "url": "https://github.com/starvoxlabs89-design/vigil/issues"
   },
   "engines": {
     "node": ">=20"

@@ -5,13 +5,13 @@
 Everyone is shipping LLM apps and AI agents. Almost nobody is watching them for prompt injection, leaked secrets, exposed MCP servers, or personal data spilling into logs. The observability tools (Langfuse, OpenLIT) watch *cost and quality* — they're blind to *security*. Vigil watches the security layer.
 
 ```bash
-npx @starvoxlabs/vigil scan https://your-app.com
-npx @starvoxlabs/vigil scan ./your-repo --fail-on high
+npx @starvoxlabs89-design/vigil scan https://your-app.com
+npx @starvoxlabs89-design/vigil scan ./your-repo --fail-on high
 ```
 
 No install. No account. One command → a report you'll want to screenshot.
 
-> Prefer the short command? `npm i -g @starvoxlabs/vigil` then just `vigil scan …`
+> Prefer the short command? `npm i -g @starvoxlabs89-design/vigil` then just `vigil scan …`
 
 ---
 
@@ -36,19 +36,19 @@ Every run produces a **Vigil Score (0–100)** and severity-ranked findings with
 
 ```bash
 # Scan a website's security posture
-npx @starvoxlabs/vigil scan https://mysite.in
+npx @starvoxlabs89-design/vigil scan https://mysite.in
 
 # Scan a codebase for secrets + Indian PII (DPDP exposure)
-npx @starvoxlabs/vigil scan ./my-app
+npx @starvoxlabs89-design/vigil scan ./my-app
 
 # Probe your own chatbot/agent endpoint for prompt injection
-npx @starvoxlabs/vigil scan x --ai https://api.myapp.com/chat --ai-field message
+npx @starvoxlabs89-design/vigil scan x --ai https://api.myapp.com/chat --ai-field message
 
 # Check an MCP server you run
-npx @starvoxlabs/vigil scan x --mcp http://localhost:8000/mcp
+npx @starvoxlabs89-design/vigil scan x --mcp http://localhost:8000/mcp
 
 # CI/CD gate — fail the build on High+ findings
-npx @starvoxlabs/vigil scan ./my-app --fail-on high --json
+npx @starvoxlabs89-design/vigil scan ./my-app --fail-on high --json
 ```
 
 ```bash

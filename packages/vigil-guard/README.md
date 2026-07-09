@@ -1,14 +1,14 @@
-# 🛡️ @starvoxlabs/vigil-guard
+# 🛡️ @starvoxlabs89-design/vigil-guard
 
 **Runtime AI security guard for Node.js.** Drop-in Express/Next middleware that blocks prompt injection, decodes invisible-Unicode smuggling, redacts Indian PII (DPDP), and firewalls MCP tool calls — in ~2 microseconds per request. Zero dependencies.
 
 ```bash
-npm install @starvoxlabs/vigil-guard
+npm install @starvoxlabs89-design/vigil-guard
 ```
 
 ```js
 import express from "express";
-import { guard } from "@starvoxlabs/vigil-guard";
+import { guard } from "@starvoxlabs89-design/vigil-guard";
 
 const g = guard({
   block: ["prompt-injection", "invisible-unicode"],
@@ -63,7 +63,7 @@ g.middleware(opts)  // Express-compatible middleware
 ### Next.js App Router
 
 ```js
-import { withGuard } from "@starvoxlabs/vigil-guard/next";
+import { withGuard } from "@starvoxlabs89-design/vigil-guard/next";
 export const POST = withGuard(async (req) => {
   const { message } = await req.json();       // already sanitized
   return Response.json({ reply: await callLLM(message) });
@@ -103,8 +103,8 @@ guard({ mode: "monitor", onEvent: (e) => metrics.write(e) });
 ## Pairs with the Vigil scanner
 
 ```bash
-npx @starvoxlabs/vigil scan https://your-site.com   # CI / scan-time
-npm install @starvoxlabs/vigil-guard                # request-time
+npx @starvoxlabs89-design/vigil scan https://your-site.com   # CI / scan-time
+npm install @starvoxlabs89-design/vigil-guard                # request-time
 ```
 
 The scanner tells you what's broken. The guard blocks it as it happens. Same detection primitives; same events shape.

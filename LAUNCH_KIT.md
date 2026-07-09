@@ -6,8 +6,8 @@
 
 ## 0. Pre-launch checklist (the blockers, in order)
 
-1. **Lock the name.** "vigil" is likely taken on npm + GitHub. Decide the brand architecture: **Starvox Labs** (house) → **Praman** (flagship) → the scanner is the OSS engine. Check npm + GitHub org + trademark before publishing. Candidate package names if Praman/Vigil collide: `@starvoxlabs/vigil`, `praman`, `praman-scan`, `vigilscan`.
-2. **Publish to npm** under the locked name (scoped `@starvoxlabs/*` is always available). Until this is done, `npx <name>` in the README is a broken promise.
+1. **Lock the name.** "vigil" is likely taken on npm + GitHub. Decide the brand architecture: **Starvox Labs** (house) → **Praman** (flagship) → the scanner is the OSS engine. Check npm + GitHub org + trademark before publishing. Candidate package names if Praman/Vigil collide: `@starvoxlabs89-design/vigil`, `praman`, `praman-scan`, `vigilscan`.
+2. **Publish to npm** under the locked name (scoped `@starvoxlabs89-design/*` is always available). Until this is done, `npx <name>` in the README is a broken promise.
 3. **Public GitHub repo** under the org, with README, LICENSE, SPEC, a pinned good-first-issues list, and the GitHub Action (`action.yml`) referenced.
 4. **Record a 20–30s demo** (asciinema or a terminal GIF): `npx <name> scan https://…` → scary score. Embed at top of README + use in every post.
 5. **Landing page** at starvoxlabs.io: one screen — the one-command demo, the Vigil Score, "secure the AI you ship," GitHub + Cloud-waitlist CTAs.

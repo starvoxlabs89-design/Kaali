@@ -6,13 +6,13 @@ Everything below is copy-paste. Do them in order. `<>` = fill in. Run from the r
 
 ## 0. One-time prerequisites
 
-- **npm account** on the `starvoxlabs` org/scope. Create the org (free for public packages): npmjs.com → your avatar → *Add Organization* → name it `starvoxlabs` → **Unlimited / public**.
-- **GitHub org** `starvoxlabs`: github.com/organizations/new (free).
+- **npm account** on the `starvoxlabs89-design` org/scope. Create the org (free for public packages): npmjs.com → your avatar → *Add Organization* → name it `starvoxlabs89-design` → **Unlimited / public**.
+- **GitHub org** `starvoxlabs89-design` — already created; the `origin` remote already points at `github.com/starvoxlabs89-design/vigil`.
 - Node ≥20 (you have v24 ✓).
 
 ---
 
-## 1. Publish `@starvoxlabs/vigil` to npm
+## 1. Publish `@starvoxlabs89-design/vigil` to npm
 
 The package is already configured: scoped name, `publishConfig.access=public`, `files` allow-list, `bin` → `vigil`.
 
@@ -32,7 +32,7 @@ npm publish --access public
 Verify it works from a clean machine / npx cache:
 
 ```bash
-npx @starvoxlabs/vigil@latest scan https://example.com
+npx @starvoxlabs89-design/vigil@latest scan https://example.com
 ```
 
 **Version bumps later:** edit code → `npm version patch` (or `minor`) → `npm publish`.
@@ -41,7 +41,7 @@ npx @starvoxlabs/vigil@latest scan https://example.com
 
 ---
 
-## 2. Public GitHub repo `github.com/starvoxlabs/vigil`
+## 2. Public GitHub repo `github.com/starvoxlabs89-design/vigil`
 
 ```bash
 cd /Volumes/AI/vigil
@@ -54,14 +54,14 @@ git add -A
 git commit -m "Vigil v0.1 — open-source security scanner for AI apps, agents & MCP"
 
 # create the repo under the org and push (needs gh CLI: brew install gh && gh auth login)
-gh repo create starvoxlabs/vigil --public --source=. --remote=origin \
+gh repo create starvoxlabs89-design/vigil --public --source=. --remote=origin \
   --description "Open-source security scanner for AI agents, LLM apps & MCP servers. DPDP-ready." --push
 ```
 
 No `gh`? Create the empty repo in the GitHub UI, then:
 
 ```bash
-git remote add origin https://github.com/starvoxlabs/vigil.git
+git remote add origin https://github.com/starvoxlabs89-design/vigil.git
 git push -u origin main
 ```
 
@@ -82,7 +82,7 @@ brew install asciinema agg     # macOS
 # record a tight ~20s session
 asciinema rec vigil-demo.cast --overwrite
 #   in the recording, type slowly and deliberately:
-#     npx @starvoxlabs/vigil scan https://example.com
+#     npx @starvoxlabs89-design/vigil scan https://example.com
 #   let the report render, then:  exit
 # (Ctrl-D stops the recording)
 
@@ -104,7 +104,7 @@ No-Homebrew fallback: record with **[terminalizer](https://github.com/faressoft/
 
 ## 4. Launch-day order (from LAUNCH_KIT.md)
 
-1. npm published ✓ → `npx @starvoxlabs/vigil` works from anywhere.
+1. npm published ✓ → `npx @starvoxlabs89-design/vigil` works from anywhere.
 2. GitHub repo public ✓ with demo GIF + polished About.
 3. Site live on `labs.starvoxlabs.io` ✓.
 4. Post the **Show HN** + **X thread** + **LinkedIn** (all pre-written in `LAUNCH_KIT.md`), Tue–Thu ~8–9am PT.
@@ -113,8 +113,8 @@ No-Homebrew fallback: record with **[terminalizer](https://github.com/faressoft/
 ---
 
 ## Done-check
-- [ ] `npm view @starvoxlabs/vigil` returns the package
-- [ ] `npx @starvoxlabs/vigil scan https://example.com` runs on a clean machine
-- [ ] `github.com/starvoxlabs/vigil` is public with README + demo GIF
+- [ ] `npm view @starvoxlabs89-design/vigil` returns the package
+- [ ] `npx @starvoxlabs89-design/vigil scan https://example.com` runs on a clean machine
+- [ ] `github.com/starvoxlabs89-design/vigil` is public with README + demo GIF
 - [ ] `labs.starvoxlabs.io` resolves to the landing page
 - [ ] Show HN / X / LinkedIn drafts reviewed and scheduled

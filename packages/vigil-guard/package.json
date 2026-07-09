@@ -1,5 +1,5 @@
 {
-  "name": "@starvoxlabs/vigil-guard",
+  "name": "@starvoxlabs89-design/vigil-guard",
   "version": "0.1.0",
   "description": "Runtime AI security guard — inline Express/Next middleware that blocks prompt injection, redacts Indian PII (DPDP), decodes invisible-Unicode smuggling, and firewalls MCP tool calls. Zero dependencies.",
   "type": "module",
