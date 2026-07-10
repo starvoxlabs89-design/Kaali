@@ -30,6 +30,14 @@ No install. No account. One command → a report you'll want to screenshot.
 
 Every run produces a **Vigil Score (0–100)** and severity-ranked findings with concrete fixes.
 
+### The report card (`--html`)
+
+`--html` turns any scan into a self-contained, shareable **report card** — a letter grade (A–F), a prioritized "fix these first" list, and a lesson for every finding: **what we found → the attack an adversary runs → the copy-paste fix → the concept to learn.** Re-scan and it shows your grade trend (`F · 31 → D+ · 58`), so security becomes something you watch improve, not a one-off wall of red.
+
+```bash
+npx @starvoxlabs89-design/vigil scan https://mysite.in --html > report.html && open report.html
+```
+
 ---
 
 ## Quick start
@@ -46,6 +54,9 @@ npx @starvoxlabs89-design/vigil scan x --ai https://api.myapp.com/chat --ai-fiel
 
 # Check an MCP server you run
 npx @starvoxlabs89-design/vigil scan x --mcp http://localhost:8000/mcp
+
+# Get a shareable, graded "report card" that explains each finding
+npx @starvoxlabs89-design/vigil scan https://mysite.in --html > report.html
 
 # CI/CD gate — fail the build on High+ findings
 npx @starvoxlabs89-design/vigil scan ./my-app --fail-on high --json

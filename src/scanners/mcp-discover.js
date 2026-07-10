@@ -72,7 +72,10 @@ function inspectServer(name, def, findings, srcFile) {
           detail: `Server launch command ${r.why}.`,
           evidence: `${cmd.slice(0, 80)} (${srcFile})`,
           owasp: "LLM-Agent",
-          fix: "Pin to an immutable version/digest from a trusted registry; review before enabling.",
+          fix: "# pin to an immutable version/digest from a trusted registry\n# review the code before enabling; avoid curl|sh and unpinned github: refs",
+          attack: `This MCP server runs code that ${r.why}. Whoever controls that source — or a compromised release — runs arbitrary code on your machine the next time your agent starts. This is exactly how the nx-console / Shai-Hulud supply-chain attacks landed.`,
+          learn: "An MCP launch command is code you auto-run with your privileges. Unpinned or remote-piped commands mean you trust whatever that ref points at, whenever it changes.",
+          learnUrl: "https://modelcontextprotocol.io/specification/draft/basic/authorization",
         }));
         break;
       }
@@ -84,7 +87,11 @@ function inspectServer(name, def, findings, srcFile) {
       title: `MCP server "${name}" configured over plaintext HTTP`,
       severity: "medium",
       detail: "Tool calls + data travel unencrypted.",
-      evidence: `${url} (${srcFile})`, owasp: "LLM-Agent", fix: "Use https:// and authenticate the transport.",
+      evidence: `${url} (${srcFile})`, owasp: "LLM-Agent",
+      fix: "Use https:// and authenticate the transport.",
+      attack: "Every tool call and its results — which may carry credentials, customer data, or commands — travel in clear text. Anyone on the network path reads or tampers with what your agent does.",
+      learn: "MCP over plain HTTP has the same problem as any unencrypted API: the transport is the weakest link. Use TLS and authenticate.",
+      learnUrl: "https://modelcontextprotocol.io/specification/draft/basic/transports",
     }));
   }
   return url && /^https?:\/\//i.test(url) ? url : null;

@@ -1,6 +1,7 @@
 import { SCANNERS, byId } from "./scanners/index.js";
 import { printReport, jsonReport, sarifReport, htmlReport } from "./report.js";
-import { c } from "./util.js";
+import { c, vigilScore } from "./util.js";
+import { loadPrev, saveScan } from "./history.js";
 
 const HELP = `
 ${c.bold("vigil")} — open-source security scanner + 24/7 monitor for AI agents, LLM apps & websites.
@@ -25,6 +26,7 @@ ${c.bold("OPTIONS")}
   --json                 Machine-readable output (for CI/CD)
   --sarif                SARIF 2.1.0 output (GitHub code-scanning)
   --html                 Shareable "report card" — graded, with a lesson per finding
+  --no-history            Don't read/write the local .vigil/ trend history
   --fail-on <sev>        Exit non-zero if a finding >= severity (critical|high|medium|low)
   -h, --help             Show this help
 
@@ -46,6 +48,7 @@ function parseArgs(argv) {
     if (a === "--json") opts.json = true;
     else if (a === "--sarif") opts.sarif = true;
     else if (a === "--html") opts.html = true;
+    else if (a === "--no-history") opts.noHistory = true;
     else if (a === "--ai") opts.aiEndpoint = argv[++i];
     else if (a === "--ai-indirect") opts.aiIndirect = argv[++i];
     else if (a === "--ai-field") opts.aiField = argv[++i];
@@ -112,10 +115,20 @@ export async function main(argv) {
     }
   }
 
+  // Trend: load the prior score for this target, then persist the current one.
+  const allFindings = results.flatMap((r) => r.findings).filter((f) => f.severity !== "info");
+  const score = vigilScore(allFindings);
+  if (opts.html && !opts.noHistory) {
+    const prev = await loadPrev(target);
+    if (prev) opts.prevScore = prev.score;
+  }
+
   if (opts.sarif) console.log(sarifReport(target, results));
   else if (opts.json) console.log(jsonReport(target, results));
   else if (opts.html) console.log(htmlReport(target, results, opts));
   else printReport(target, results);
+
+  if (!opts.noHistory) await saveScan(target, score, new Date().toISOString());
 
   if (opts.failOn) {
     const threshold = SEV_RANK[opts.failOn] ?? 99;

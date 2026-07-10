@@ -70,7 +70,10 @@ export async function run(target, opts = {}) {
         detail: "Agent executed an instruction hidden in retrieved content (canary leaked).",
         evidence: `vector=${vec.id}`,
         owasp: "LLM01:2025",
-        fix: "Treat all retrieved/tool content as untrusted data; never let it alter control flow. Add output canary filtering + instruction-hierarchy enforcement.",
+        fix: "# treat all retrieved / tool / email content as DATA, never control flow\n# strip hidden markup + invisible-Unicode before the model sees it\n# add output canary filtering + instruction-hierarchy enforcement",
+        attack: `Your agent fetched a ${vec.id.replace("-", " ")} an attacker controls and obeyed an instruction buried inside it — no user involved. This is how a poisoned web page, tool result, or email quietly hijacks an autonomous agent into leaking data or calling tools.`,
+        learn: "Indirect injection is the agentic threat: the model can't tell content it was asked to read from instructions it should follow. #1 on the OWASP LLM Top 10.",
+        learnUrl: "https://arxiv.org/abs/2302.12173",
       }));
     }
   }
