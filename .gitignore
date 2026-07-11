@@ -8,3 +8,5 @@ vigil.sarif
 .claude/
 *.cast
 _fullpage.png
+.db_credentials
+packages/*/package-lock.json
