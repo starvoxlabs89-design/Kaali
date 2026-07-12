@@ -32,33 +32,64 @@
   a{color:inherit;text-decoration:none}
   ::selection{background:var(--teal);color:#04201c}
 
-  /* --- Cosmic backdrop --- */
+  /* --- Cosmic backdrop — layered nebulae + starfield + fire glow --- */
   .cosmos{position:fixed;inset:0;z-index:0;pointer-events:none;overflow:hidden}
-  .cosmos::before,.cosmos::after{content:"";position:absolute;inset:-20%;
+  .cosmos::before,.cosmos::after{content:"";position:absolute;inset:-30%;
     background:
-      radial-gradient(circle at 15% 8%, rgba(167,139,250,.22), transparent 40%),
-      radial-gradient(circle at 90% 20%, rgba(56,189,248,.18), transparent 45%),
-      radial-gradient(circle at 50% 90%, rgba(244,114,182,.14), transparent 50%),
-      radial-gradient(circle at 25% 75%, rgba(94,234,212,.12), transparent 45%);
-    filter:blur(80px);
-    animation:driftA 40s ease-in-out infinite alternate}
-  .cosmos::after{animation:driftB 55s ease-in-out infinite alternate;opacity:.7}
-  @keyframes driftA{ 0%{transform:translate(0,0) rotate(0)} 100%{transform:translate(-4%,3%) rotate(6deg)} }
-  @keyframes driftB{ 0%{transform:translate(0,0) rotate(0)} 100%{transform:translate(5%,-3%) rotate(-8deg)} }
+      radial-gradient(60% 60% at 50% 42%, rgba(139,92,246,.28), transparent 60%),
+      radial-gradient(45% 45% at 20% 25%, rgba(167,139,250,.24), transparent 65%),
+      radial-gradient(50% 50% at 82% 18%, rgba(56,189,248,.22), transparent 60%),
+      radial-gradient(55% 55% at 78% 82%, rgba(244,114,182,.28), transparent 60%),
+      radial-gradient(40% 40% at 20% 78%, rgba(94,234,212,.16), transparent 65%),
+      radial-gradient(35% 35% at 50% 95%, rgba(251,146,60,.22), transparent 55%);
+    filter:blur(70px);
+    animation:driftA 50s ease-in-out infinite alternate}
+  .cosmos::after{animation:driftB 65s ease-in-out infinite alternate;opacity:.65;mix-blend-mode:screen}
+  @keyframes driftA{ 0%{transform:translate(0,0) rotate(0) scale(1)} 100%{transform:translate(-3%,2%) rotate(4deg) scale(1.05)} }
+  @keyframes driftB{ 0%{transform:translate(0,0) rotate(0) scale(1)} 100%{transform:translate(4%,-3%) rotate(-6deg) scale(1.08)} }
+  /* Ground-line fire glow — mimics the warm base of the mythological reference */
+  .horizon{position:fixed;left:0;right:0;bottom:0;height:38vh;z-index:1;pointer-events:none;
+    background:
+      radial-gradient(80% 100% at 50% 100%, rgba(251,146,60,.18), transparent 60%),
+      radial-gradient(60% 80% at 40% 100%, rgba(244,114,182,.14), transparent 60%),
+      radial-gradient(60% 80% at 65% 100%, rgba(139,92,246,.18), transparent 60%);
+    filter:blur(30px)}
   .stars{position:fixed;inset:0;z-index:0;pointer-events:none;
     background-image:
+      radial-gradient(1.5px 1.5px at 8% 12%, #fff, transparent),
       radial-gradient(1px 1px at 12% 22%, #fff9, transparent),
-      radial-gradient(1px 1px at 27% 8%, #fffd, transparent),
-      radial-gradient(1.5px 1.5px at 42% 34%, #fffb, transparent),
+      radial-gradient(1px 1px at 20% 6%, #fffb, transparent),
+      radial-gradient(1.5px 1.5px at 27% 34%, #fffd, transparent),
+      radial-gradient(1px 1px at 33% 18%, #fff9, transparent),
+      radial-gradient(2px 2px at 42% 8%, #fff, transparent),
+      radial-gradient(1px 1px at 47% 44%, #fffb, transparent),
+      radial-gradient(1.5px 1.5px at 55% 24%, #fffb, transparent),
       radial-gradient(1px 1px at 63% 12%, #fff9, transparent),
-      radial-gradient(1px 1px at 76% 28%, #fffc, transparent),
+      radial-gradient(1px 1px at 68% 32%, #fffc, transparent),
+      radial-gradient(1.5px 1.5px at 76% 28%, #fffc, transparent),
+      radial-gradient(2px 2px at 82% 8%, #fff, transparent),
+      radial-gradient(1.5px 1.5px at 88% 18%, #fffb, transparent),
+      radial-gradient(1px 1px at 92% 44%, #fff9, transparent),
+      radial-gradient(1px 1px at 6% 52%, #fff9, transparent),
       radial-gradient(1.5px 1.5px at 82% 55%, #fffb, transparent),
-      radial-gradient(1px 1px at 8%  62%, #fff9, transparent),
+      radial-gradient(1px 1px at 15% 62%, #fff9, transparent),
       radial-gradient(1px 1px at 34% 78%, #fffb, transparent),
-      radial-gradient(1px 1px at 55% 88%, #fff9, transparent),
+      radial-gradient(1.5px 1.5px at 46% 68%, #fffc, transparent),
+      radial-gradient(1px 1px at 55% 82%, #fff9, transparent),
+      radial-gradient(1px 1px at 72% 74%, #fff9, transparent),
       radial-gradient(1.5px 1.5px at 91% 74%, #fffc, transparent);
-    animation:twinkle 6s ease-in-out infinite alternate}
-  @keyframes twinkle{ from{opacity:.55} to{opacity:1} }
+    animation:twinkle 5s ease-in-out infinite alternate}
+  @keyframes twinkle{ from{opacity:.5} to{opacity:.95} }
+  /* Slow drifting particles */
+  .dust{position:fixed;inset:0;z-index:0;pointer-events:none;opacity:.55;
+    background:
+      radial-gradient(1px 1px at 25% 30%, rgba(244,114,182,.9), transparent),
+      radial-gradient(1px 1px at 60% 40%, rgba(56,189,248,.8), transparent),
+      radial-gradient(1px 1px at 80% 70%, rgba(167,139,250,.9), transparent),
+      radial-gradient(1px 1px at 35% 65%, rgba(94,234,212,.8), transparent),
+      radial-gradient(1px 1px at 70% 20%, rgba(251,146,60,.7), transparent);
+    animation:driftDust 30s linear infinite}
+  @keyframes driftDust{ from{transform:translateY(0)} to{transform:translateY(-40px)} }
 
   /* --- Nav --- */
   nav.top{position:sticky;top:0;z-index:50;padding:14px 24px;
@@ -103,37 +134,64 @@
   .hero-quote strong{color:var(--text);font-style:normal;font-weight:600}
   .hero-cta{display:flex;gap:12px;justify-content:center;margin-top:28px;flex-wrap:wrap}
 
-  /* --- Kaali Chakra (hero visual) --- */
-  .chakra{position:relative;width:min(560px,88vw);aspect-ratio:1;margin:44px auto 0;
-    display:grid;place-items:center;filter:drop-shadow(0 30px 80px rgba(94,234,212,.15))}
-  .ring{position:absolute;inset:0;border-radius:50%;
-    border:1px solid rgba(94,234,212,.25);animation:spin 60s linear infinite}
-  .ring.r2{inset:8%;border-color:rgba(56,189,248,.22);animation-duration:80s;animation-direction:reverse}
-  .ring.r3{inset:18%;border-color:rgba(167,139,250,.22);animation-duration:100s}
-  .ring.r4{inset:28%;border-color:rgba(244,114,182,.18);animation-duration:120s;animation-direction:reverse}
-  .ring::after{content:"";position:absolute;top:-3px;left:50%;width:6px;height:6px;border-radius:50%;
-    background:var(--teal);box-shadow:0 0 12px var(--teal);transform:translateX(-50%)}
-  .ring.r2::after{background:var(--blue);box-shadow:0 0 12px var(--blue)}
-  .ring.r3::after{background:var(--violet);box-shadow:0 0 12px var(--violet)}
-  .ring.r4::after{background:var(--rose);box-shadow:0 0 12px var(--rose)}
+  /* --- Cosmic hero visual — massive, mythological scale --- */
+  .cosmic{position:relative;width:min(720px,94vw);aspect-ratio:1;margin:40px auto 0;
+    display:grid;place-items:center}
+  /* Radiant light beams — 12 rays fanning out */
+  .beams{position:absolute;inset:0;pointer-events:none;
+    background:conic-gradient(from 0deg,
+      transparent 0deg 8deg, rgba(167,139,250,.10) 12deg 18deg,
+      transparent 22deg 38deg, rgba(56,189,248,.08) 42deg 48deg,
+      transparent 52deg 68deg, rgba(244,114,182,.10) 72deg 78deg,
+      transparent 82deg 98deg, rgba(94,234,212,.08) 102deg 108deg,
+      transparent 112deg 128deg, rgba(167,139,250,.10) 132deg 138deg,
+      transparent 142deg 158deg, rgba(56,189,248,.08) 162deg 168deg,
+      transparent 172deg 188deg, rgba(244,114,182,.10) 192deg 198deg,
+      transparent 202deg 218deg, rgba(94,234,212,.08) 222deg 228deg,
+      transparent 232deg 248deg, rgba(167,139,250,.10) 252deg 258deg,
+      transparent 262deg 278deg, rgba(56,189,248,.08) 282deg 288deg,
+      transparent 292deg 308deg, rgba(244,114,182,.10) 312deg 318deg,
+      transparent 322deg 338deg, rgba(94,234,212,.08) 342deg 348deg,
+      transparent 352deg 360deg);
+    mask:radial-gradient(circle, transparent 22%, black 42%, black 80%, transparent 100%);
+    -webkit-mask:radial-gradient(circle, transparent 22%, black 42%, black 80%, transparent 100%);
+    filter:blur(1px);animation:beamsSpin 200s linear infinite}
+  @keyframes beamsSpin{to{transform:rotate(360deg)}}
+  /* Concentric aura rings */
+  .ring{position:absolute;border-radius:50%;pointer-events:none}
+  .r1{inset:5%;border:1px solid rgba(167,139,250,.22);animation:spin 90s linear infinite}
+  .r2{inset:16%;border:1px solid rgba(56,189,248,.22);animation:spin 110s linear infinite reverse}
+  .r3{inset:26%;border:1px solid rgba(244,114,182,.22);animation:spin 130s linear infinite}
+  .r4{inset:34%;border:1px dashed rgba(94,234,212,.35);animation:spin 60s linear infinite reverse}
+  .r1::after,.r2::after,.r3::after,.r4::after{content:"";position:absolute;top:-3px;left:50%;
+    width:8px;height:8px;border-radius:50%;transform:translateX(-50%)}
+  .r1::after{background:var(--violet);box-shadow:0 0 14px var(--violet)}
+  .r2::after{background:var(--blue);box-shadow:0 0 14px var(--blue)}
+  .r3::after{background:var(--rose);box-shadow:0 0 14px var(--rose)}
+  .r4::after{background:var(--teal);box-shadow:0 0 14px var(--teal)}
   @keyframes spin{to{transform:rotate(360deg)}}
-  .core{width:38%;aspect-ratio:1;border-radius:50%;background:radial-gradient(circle,rgba(94,234,212,.85),rgba(56,189,248,.4) 50%,rgba(10,12,20,0) 80%);
-    display:grid;place-items:center;position:relative;
-    box-shadow:0 0 60px rgba(94,234,212,.5), inset 0 0 40px rgba(255,255,255,.2);animation:breathe 6s ease-in-out infinite}
-  .core::before{content:"॥";font:800 clamp(60px,10vw,120px)/1 var(--serif);color:#04201c;letter-spacing:-.06em}
-  @keyframes breathe{ 0%,100%{transform:scale(.98)} 50%{transform:scale(1.04)} }
-  /* Trishul spokes */
-  .spokes{position:absolute;inset:0;pointer-events:none}
-  .spoke{position:absolute;top:50%;left:50%;width:44%;height:1px;transform-origin:0 0;
-    background:linear-gradient(90deg,rgba(94,234,212,.5),transparent)}
-  .spoke:nth-child(1){transform:rotate(0deg)}
-  .spoke:nth-child(2){transform:rotate(45deg)}
-  .spoke:nth-child(3){transform:rotate(90deg)}
-  .spoke:nth-child(4){transform:rotate(135deg)}
-  .spoke:nth-child(5){transform:rotate(180deg)}
-  .spoke:nth-child(6){transform:rotate(225deg)}
-  .spoke:nth-child(7){transform:rotate(270deg)}
-  .spoke:nth-child(8){transform:rotate(315deg)}
+  /* Central luminous core with the ॥ mark */
+  .core{position:absolute;width:26%;aspect-ratio:1;border-radius:50%;
+    background:
+      radial-gradient(circle at 40% 35%, rgba(255,255,255,.9), transparent 30%),
+      radial-gradient(circle, rgba(94,234,212,.95) 0%, rgba(56,189,248,.6) 40%, rgba(167,139,250,.3) 65%, transparent 85%);
+    display:grid;place-items:center;
+    box-shadow:0 0 120px 30px rgba(94,234,212,.35), 0 0 60px 15px rgba(56,189,248,.4), inset 0 0 30px rgba(255,255,255,.5);
+    animation:breathe 5s ease-in-out infinite}
+  .core::before{content:"॥";font:800 clamp(56px,8vw,110px)/1 var(--serif);color:#04201c;letter-spacing:-.06em}
+  @keyframes breathe{ 0%,100%{transform:scale(.96)} 50%{transform:scale(1.05)} }
+  /* Weapon symbols orbiting — chakra, trishul, damaru, lotus */
+  .weapon{position:absolute;font-size:24px;color:rgba(255,255,255,.55);
+    text-shadow:0 0 12px rgba(167,139,250,.6);animation:orbit 40s linear infinite}
+  .weapon.w1{top:8%;left:50%;transform-origin:0 380px}
+  .weapon.w2{top:8%;left:50%;transform-origin:0 380px;animation-delay:-10s}
+  .weapon.w3{top:8%;left:50%;transform-origin:0 380px;animation-delay:-20s}
+  .weapon.w4{top:8%;left:50%;transform-origin:0 380px;animation-delay:-30s}
+  @keyframes orbit{ from{transform:rotate(0deg)} to{transform:rotate(360deg)} }
+  /* Warrior silhouette at the bottom looking up — the cinematic moment */
+  .warrior{position:absolute;bottom:-6%;left:50%;transform:translateX(-50%);
+    width:120px;height:180px;pointer-events:none}
+  .warrior svg{width:100%;height:100%;filter:drop-shadow(0 0 12px rgba(251,146,60,.25))}
 
   /* --- Sections --- */
   section{position:relative;z-index:2;padding:80px 24px}
@@ -243,6 +301,8 @@
 
 <div class="cosmos"></div>
 <div class="stars"></div>
+<div class="dust"></div>
+<div class="horizon"></div>
 
 <nav class="top">
   <div class="nav-inner">
@@ -267,16 +327,46 @@
       <a href="#try" class="btn primary">Try live scan &rarr;</a>
       <a href="/signin.html" class="btn ghost">Create account</a>
     </div>
-    <div class="chakra">
-      <div class="spokes">
-        <div class="spoke"></div><div class="spoke"></div><div class="spoke"></div><div class="spoke"></div>
-        <div class="spoke"></div><div class="spoke"></div><div class="spoke"></div><div class="spoke"></div>
-      </div>
-      <div class="ring"></div>
+    <div class="cosmic">
+      <div class="beams"></div>
+      <div class="ring r1"></div>
       <div class="ring r2"></div>
       <div class="ring r3"></div>
       <div class="ring r4"></div>
+      <div class="weapon w1" title="Chakra">☸</div>
+      <div class="weapon w2" title="Trishul">🔱</div>
+      <div class="weapon w3" title="Lotus">✦</div>
+      <div class="weapon w4" title="Damaru">◆</div>
       <div class="core"></div>
+      <div class="warrior">
+        <svg viewBox="0 0 120 180" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+          <defs>
+            <linearGradient id="wg" x1="0" y1="0" x2="0" y2="1">
+              <stop offset="0%" stop-color="#111827" stop-opacity="0"/>
+              <stop offset="40%" stop-color="#0a0c14" stop-opacity=".95"/>
+              <stop offset="100%" stop-color="#050710"/>
+            </linearGradient>
+          </defs>
+          <!-- Warrior silhouette from behind, looking up, bow in hand -->
+          <path fill="url(#wg)" d="
+            M 60 30
+            C 66 30, 71 34, 71 40
+            C 71 46, 66 50, 60 50
+            C 54 50, 49 46, 49 40
+            C 49 34, 54 30, 60 30 Z
+            M 60 52
+            L 52 58 L 46 74 L 42 92 L 40 115 L 42 145 L 46 175
+            L 52 178 L 55 175 L 58 155 L 60 130 L 62 155 L 65 175
+            L 68 178 L 74 175 L 78 145 L 80 115 L 78 92 L 74 74 L 68 58 Z
+            M 44 78 L 32 100 L 28 118 L 32 128 L 40 118 L 45 100 Z
+            M 76 78 L 88 100 L 92 118 L 88 128 L 80 118 L 75 100 Z
+          "/>
+          <!-- Bow held in right hand — arced curve behind figure -->
+          <path fill="none" stroke="rgba(251,146,60,.5)" stroke-width="1.2" d="M 92 90 Q 108 105, 104 130 Q 100 155, 88 168"/>
+          <!-- Bowstring -->
+          <line x1="94" y1="93" x2="88" y2="167" stroke="rgba(251,146,60,.35)" stroke-width=".8"/>
+        </svg>
+      </div>
     </div>
     <p class="hero-quote">"या देवी सर्वभूतेषु शक्तिरूपेण संस्थिता" &nbsp;·&nbsp; <strong>The power that resides in all things — turned to watch over your code.</strong></p>
   </div>
