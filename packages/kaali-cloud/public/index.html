@@ -170,28 +170,21 @@
   .r3::after{background:var(--rose);box-shadow:0 0 14px var(--rose)}
   .r4::after{background:var(--teal);box-shadow:0 0 14px var(--teal)}
   @keyframes spin{to{transform:rotate(360deg)}}
-  /* Central luminous core with the ॥ mark */
-  .core{position:absolute;width:26%;aspect-ratio:1;border-radius:50%;
+  /* Central luminous core — abstract, geometric, not deity */
+  .core{position:absolute;width:30%;aspect-ratio:1;border-radius:50%;
     background:
-      radial-gradient(circle at 40% 35%, rgba(255,255,255,.9), transparent 30%),
-      radial-gradient(circle, rgba(94,234,212,.95) 0%, rgba(56,189,248,.6) 40%, rgba(167,139,250,.3) 65%, transparent 85%);
+      radial-gradient(circle at 42% 38%, rgba(255,255,255,.95), transparent 32%),
+      radial-gradient(circle, rgba(94,234,212,.9) 0%, rgba(56,189,248,.55) 42%, rgba(167,139,250,.25) 70%, transparent 88%);
     display:grid;place-items:center;
-    box-shadow:0 0 120px 30px rgba(94,234,212,.35), 0 0 60px 15px rgba(56,189,248,.4), inset 0 0 30px rgba(255,255,255,.5);
-    animation:breathe 5s ease-in-out infinite}
-  .core::before{content:"॥";font:800 clamp(56px,8vw,110px)/1 var(--serif);color:#04201c;letter-spacing:-.06em}
+    box-shadow:0 0 140px 40px rgba(94,234,212,.32), 0 0 70px 18px rgba(56,189,248,.35), inset 0 0 40px rgba(255,255,255,.4);
+    animation:breathe 6s ease-in-out infinite}
+  .core svg{width:56%;height:56%;opacity:.9;
+    filter:drop-shadow(0 0 8px rgba(4,32,28,.4))}
   @keyframes breathe{ 0%,100%{transform:scale(.96)} 50%{transform:scale(1.05)} }
-  /* Weapon symbols orbiting — chakra, trishul, damaru, lotus */
-  .weapon{position:absolute;font-size:24px;color:rgba(255,255,255,.55);
-    text-shadow:0 0 12px rgba(167,139,250,.6);animation:orbit 40s linear infinite}
-  .weapon.w1{top:8%;left:50%;transform-origin:0 380px}
-  .weapon.w2{top:8%;left:50%;transform-origin:0 380px;animation-delay:-10s}
-  .weapon.w3{top:8%;left:50%;transform-origin:0 380px;animation-delay:-20s}
-  .weapon.w4{top:8%;left:50%;transform-origin:0 380px;animation-delay:-30s}
-  @keyframes orbit{ from{transform:rotate(0deg)} to{transform:rotate(360deg)} }
-  /* Warrior silhouette at the bottom looking up — the cinematic moment */
-  .warrior{position:absolute;bottom:-6%;left:50%;transform:translateX(-50%);
-    width:120px;height:180px;pointer-events:none}
-  .warrior svg{width:100%;height:100%;filter:drop-shadow(0 0 12px rgba(251,146,60,.25))}
+  /* Yantra-inspired geometric accents — interlocking triangles, subtle */
+  .yantra{position:absolute;inset:32%;pointer-events:none;
+    opacity:.35;animation:spin 220s linear infinite}
+  .yantra svg{width:100%;height:100%}
 
   /* --- Sections --- */
   section{position:relative;z-index:2;padding:80px 24px}
@@ -333,42 +326,37 @@
       <div class="ring r2"></div>
       <div class="ring r3"></div>
       <div class="ring r4"></div>
-      <div class="weapon w1" title="Chakra">☸</div>
-      <div class="weapon w2" title="Trishul">🔱</div>
-      <div class="weapon w3" title="Lotus">✦</div>
-      <div class="weapon w4" title="Damaru">◆</div>
-      <div class="core"></div>
-      <div class="warrior">
-        <svg viewBox="0 0 120 180" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+      <!-- Subtle yantra-inspired geometry (interlocking triangles). Ancient roots,
+           reads as modern sacred-geometry, not a specific deity's symbol. -->
+      <div class="yantra">
+        <svg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+          <g fill="none" stroke="rgba(167,139,250,.55)" stroke-width=".8">
+            <polygon points="100,20 180,150 20,150"/>
+            <polygon points="100,180 20,50 180,50"/>
+            <polygon points="100,50 155,130 45,130" stroke="rgba(56,189,248,.5)"/>
+            <polygon points="100,150 45,70 155,70" stroke="rgba(56,189,248,.5)"/>
+            <circle cx="100" cy="100" r="70" stroke="rgba(94,234,212,.35)"/>
+            <circle cx="100" cy="100" r="42" stroke="rgba(244,114,182,.35)"/>
+          </g>
+        </svg>
+      </div>
+      <div class="core">
+        <!-- Abstract K mark — modern typographic center, not a religious symbol -->
+        <svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
           <defs>
-            <linearGradient id="wg" x1="0" y1="0" x2="0" y2="1">
-              <stop offset="0%" stop-color="#111827" stop-opacity="0"/>
-              <stop offset="40%" stop-color="#0a0c14" stop-opacity=".95"/>
-              <stop offset="100%" stop-color="#050710"/>
+            <linearGradient id="kg" x1="0" y1="0" x2="1" y2="1">
+              <stop offset="0%" stop-color="#04201c"/>
+              <stop offset="100%" stop-color="#052a3e"/>
             </linearGradient>
           </defs>
-          <!-- Warrior silhouette from behind, looking up, bow in hand -->
-          <path fill="url(#wg)" d="
-            M 60 30
-            C 66 30, 71 34, 71 40
-            C 71 46, 66 50, 60 50
-            C 54 50, 49 46, 49 40
-            C 49 34, 54 30, 60 30 Z
-            M 60 52
-            L 52 58 L 46 74 L 42 92 L 40 115 L 42 145 L 46 175
-            L 52 178 L 55 175 L 58 155 L 60 130 L 62 155 L 65 175
-            L 68 178 L 74 175 L 78 145 L 80 115 L 78 92 L 74 74 L 68 58 Z
-            M 44 78 L 32 100 L 28 118 L 32 128 L 40 118 L 45 100 Z
-            M 76 78 L 88 100 L 92 118 L 88 128 L 80 118 L 75 100 Z
-          "/>
-          <!-- Bow held in right hand — arced curve behind figure -->
-          <path fill="none" stroke="rgba(251,146,60,.5)" stroke-width="1.2" d="M 92 90 Q 108 105, 104 130 Q 100 155, 88 168"/>
-          <!-- Bowstring -->
-          <line x1="94" y1="93" x2="88" y2="167" stroke="rgba(251,146,60,.35)" stroke-width=".8"/>
+          <g fill="url(#kg)">
+            <!-- Stylized K glyph -->
+            <path d="M 22 15 L 32 15 L 32 44 L 62 15 L 76 15 L 50 41 L 78 85 L 66 85 L 43 49 L 32 60 L 32 85 L 22 85 Z"/>
+          </g>
         </svg>
       </div>
     </div>
-    <p class="hero-quote">"या देवी सर्वभूतेषु शक्तिरूपेण संस्थिता" &nbsp;·&nbsp; <strong>The power that resides in all things — turned to watch over your code.</strong></p>
+    <p class="hero-quote"><strong>Ancient wisdom.</strong> Modern threats. <strong>One security stack.</strong></p>
   </div>
 </section>
 
