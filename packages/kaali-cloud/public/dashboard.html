@@ -49,6 +49,30 @@
   .score{font-family:var(--mono);font-weight:700}
   code{background:#0b0e13;border:1px solid var(--line);padding:1px 6px;border-radius:6px;font-family:var(--mono);font-size:12px}
   a{color:var(--accent2)}
+  .scanbox{display:flex;gap:8px;margin-top:4px}
+  .scanbox input{flex:1;background:#0b0e13;border:1px solid var(--line);border-radius:10px;color:var(--text);padding:12px 14px;font-family:var(--mono);font-size:14px}
+  .scanbox input:focus{outline:none;border-color:var(--accent2)}
+  .scanbox button{padding:12px 22px}
+  .scanhead{display:flex;align-items:center;gap:16px;padding:14px 18px;border:1px solid var(--line);border-radius:12px;background:#0b0e13;margin-top:16px}
+  .scanhead .score{font-family:var(--mono);font-size:34px;font-weight:700}
+  .scanhead .meta{color:var(--dim);font-size:13px;line-height:1.5}
+  .scanhead .meta strong{color:var(--text)}
+  .find{border:1px solid var(--line);border-left-width:4px;border-radius:10px;padding:12px 14px;margin-top:8px;background:var(--panel)}
+  .find.critical{border-left-color:var(--crit)}
+  .find.high{border-left-color:var(--high)}
+  .find.medium{border-left-color:var(--med)}
+  .find.low{border-left-color:var(--accent2)}
+  .find.info{border-left-color:var(--dim)}
+  .find .sev{font-family:var(--mono);font-size:10.5px;font-weight:700;padding:2px 7px;border-radius:5px;text-transform:uppercase;margin-right:8px}
+  .find .sev.critical{background:#3a1414;color:var(--crit)}
+  .find .sev.high{background:#3a2410;color:var(--high)}
+  .find .sev.medium{background:#3a3410;color:var(--med)}
+  .find .sev.low{background:#0c1f2a;color:var(--accent2)}
+  .find .sev.info{background:#161b24;color:var(--dim)}
+  .find .ftitle{font-weight:600;margin-top:2px}
+  .find .fdetail{color:var(--dim);font-size:13px;margin-top:2px;line-height:1.5}
+  .find .ffix{color:var(--ok);font-size:12.5px;margin-top:4px}
+  .clean{padding:16px;border:1px solid #0e2a1c;background:#06140f;color:var(--ok);border-radius:10px;font-size:14px}
 </style>
 </head>
 <body>
@@ -62,6 +86,15 @@
 <main>
   <h1>Welcome back.</h1>
   <div class="sub">All Kaali events from your CLI scans and vigil-guard runtime, in one place.</div>
+
+  <div class="card">
+    <h2>Scan a URL <span style="color:var(--dim);font-weight:400;font-size:13px">— live vuln + AI-content scan in your browser</span></h2>
+    <div class="scanbox">
+      <input id="scanUrl" placeholder="https://your-site.com" autocomplete="off" spellcheck="false">
+      <button class="primary" id="scanBtn">Scan</button>
+    </div>
+    <div id="scanOut"></div>
+  </div>
 
   <div class="grid" id="stats"></div>
 
@@ -166,6 +199,49 @@ $('newKey').onclick = async () => {
   $('keyName').value = '';
   refreshAll();
 };
+
+async function runScan(){
+  const raw = $('scanUrl').value.trim();
+  if (!raw) return;
+  const url = /^https?:\/\//i.test(raw) ? raw : ('https://' + raw);
+  const btn = $('scanBtn'); btn.disabled = true; btn.textContent = 'Scanning…';
+  $('scanOut').innerHTML = '';
+  try {
+    const r = await j('/scan', {method:'POST', headers:{'content-type':'application/json'}, body: JSON.stringify({url})});
+    renderScan(r);
+    refreshAll();  // update stat cards + recent events
+  } catch (e) {
+    $('scanOut').innerHTML = `<div class="scanhead" style="border-color:var(--crit)"><div style="color:var(--crit);font-weight:600">Scan failed</div><div class="meta">${escapeHtml(e.message || String(e))}</div></div>`;
+  } finally {
+    btn.disabled = false; btn.textContent = 'Scan';
+  }
+}
+function renderScan(r){
+  const col = r.score>=80?'var(--ok)':r.score>=50?'var(--med)':'var(--crit)';
+  const counts = ['critical','high','medium','low','info'].map(s => `${r.findings.filter(f=>f.severity===s).length} ${s}`).join(' · ');
+  let html = `<div class="scanhead">
+    <div class="score" style="color:${col}">${r.score}<span style="font-size:15px;color:var(--dim)">/100</span></div>
+    <div class="meta"><strong>${escapeHtml(r.target)}</strong> · HTTP ${r.http_status||'—'}<br>${r.findings.length} findings — ${counts}</div>
+  </div>`;
+  if (r.findings.length === 0) {
+    html += `<div class="clean" style="margin-top:12px">✓ No findings for the checks that ran (web headers + AI content). Try adding <code>--ai</code> or <code>--mcp</code> targets from the CLI for deeper probes.</div>`;
+  } else {
+    for (const f of r.findings) {
+      html += `<div class="find ${f.severity}">
+        <span class="sev ${f.severity}">${f.severity}</span>
+        ${f.owasp ? `<span style="color:var(--dim);font-size:11px">${escapeHtml(f.owasp)}</span>` : ''}
+        ${f.dpdp ? `<span style="color:var(--accent);font-size:11px;margin-left:4px">DPDP:${escapeHtml(f.dpdp)}</span>` : ''}
+        <div class="ftitle">${escapeHtml(f.title)}</div>
+        ${f.detail ? `<div class="fdetail">${escapeHtml(f.detail)}</div>` : ''}
+        ${f.evidence ? `<div class="fdetail" style="font-family:var(--mono);font-size:12px">evidence: ${escapeHtml(f.evidence)}</div>` : ''}
+        ${f.fix ? `<div class="ffix">fix: ${escapeHtml(f.fix)}</div>` : ''}
+      </div>`;
+    }
+  }
+  $('scanOut').innerHTML = html;
+}
+$('scanBtn').onclick = runScan;
+$('scanUrl').addEventListener('keydown', e => { if (e.key === 'Enter') runScan(); });
 
 $('logout').onclick = async () => { await j('/auth/logout', {method:'POST'}).catch(()=>{}); location.href='/'; };
 $('erase').onclick = async () => {

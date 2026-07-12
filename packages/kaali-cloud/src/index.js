@@ -9,6 +9,7 @@ import { signup, verify, login, logout, forgot, reset, me, eraseMe } from "./aut
 import { listKeys, createKey, revokeKey } from "./keys.js";
 import { ingest } from "./ingest.js";
 import { recentEvents, stats } from "./dashboard.js";
+import { scan } from "./scanroute.js";
 import { begin as oauthBegin, callback as oauthCallback, providersList } from "./oauth.js";
 import { json, text } from "./util.js";
 
@@ -53,6 +54,7 @@ const routes = [
   ["GET",  /^\/me\/events$/,     recentEvents],
   ["GET",  /^\/me\/stats$/,      stats],
   ["POST", /^\/ingest$/,         ingest],
+  ["POST", /^\/scan$/,           scan],
   ["GET",  /^\/auth\/providers$/,          providersList],
   ["GET",  /^\/auth\/(google|meta)$/,       (req, res, p) => oauthBegin(req, res, p)],
   ["GET",  /^\/auth\/(google|meta)\/callback$/, (req, res, p) => oauthCallback(req, res, p)],
