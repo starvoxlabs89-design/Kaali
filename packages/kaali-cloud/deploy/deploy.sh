@@ -64,6 +64,18 @@ for f in "$APP_DIR"/migrations/*.sql; do
   cat "$f" | sudo -u postgres psql -d "$DB_NAME" -v ON_ERROR_STOP=1 >/dev/null
 done
 
+# Migrations run as the `postgres` superuser, which means tables/sequences are
+# owned by postgres by default and the app-role has no privileges. Grant them
+# explicitly, and set default privileges so future migrations inherit access.
+step "Granting privileges to $DB_USER"
+sudo -u postgres psql -d "$DB_NAME" -v ON_ERROR_STOP=1 >/dev/null <<SQL
+GRANT USAGE, CREATE ON SCHEMA public TO $DB_USER;
+GRANT ALL PRIVILEGES ON ALL TABLES IN SCHEMA public TO $DB_USER;
+GRANT ALL PRIVILEGES ON ALL SEQUENCES IN SCHEMA public TO $DB_USER;
+ALTER DEFAULT PRIVILEGES IN SCHEMA public GRANT ALL ON TABLES TO $DB_USER;
+ALTER DEFAULT PRIVILEGES IN SCHEMA public GRANT ALL ON SEQUENCES TO $DB_USER;
+SQL
+
 # --- 4. .env -----------------------------------------------------------------
 step "Ensuring .env"
 if [[ ! -f "$APP_DIR/.env" ]]; then
