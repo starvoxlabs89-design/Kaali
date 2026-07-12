@@ -134,57 +134,55 @@
   .hero-quote strong{color:var(--text);font-style:normal;font-weight:600}
   .hero-cta{display:flex;gap:12px;justify-content:center;margin-top:28px;flex-wrap:wrap}
 
-  /* --- Cosmic hero visual — massive, mythological scale --- */
-  .cosmic{position:relative;width:min(720px,94vw);aspect-ratio:1;margin:40px auto 0;
+  /* --- Full mythological cosmic hero — deity-inspired figure with warrior --- */
+  .cosmic{position:relative;width:min(780px,96vw);aspect-ratio:5/6;margin:32px auto 0;
     display:grid;place-items:center}
-  /* Radiant light beams — 12 rays fanning out */
+  /* Radiant light beams from behind the figure */
   .beams{position:absolute;inset:0;pointer-events:none;
     background:conic-gradient(from 0deg,
-      transparent 0deg 8deg, rgba(167,139,250,.10) 12deg 18deg,
-      transparent 22deg 38deg, rgba(56,189,248,.08) 42deg 48deg,
-      transparent 52deg 68deg, rgba(244,114,182,.10) 72deg 78deg,
-      transparent 82deg 98deg, rgba(94,234,212,.08) 102deg 108deg,
-      transparent 112deg 128deg, rgba(167,139,250,.10) 132deg 138deg,
-      transparent 142deg 158deg, rgba(56,189,248,.08) 162deg 168deg,
-      transparent 172deg 188deg, rgba(244,114,182,.10) 192deg 198deg,
-      transparent 202deg 218deg, rgba(94,234,212,.08) 222deg 228deg,
-      transparent 232deg 248deg, rgba(167,139,250,.10) 252deg 258deg,
-      transparent 262deg 278deg, rgba(56,189,248,.08) 282deg 288deg,
-      transparent 292deg 308deg, rgba(244,114,182,.10) 312deg 318deg,
-      transparent 322deg 338deg, rgba(94,234,212,.08) 342deg 348deg,
-      transparent 352deg 360deg);
-    mask:radial-gradient(circle, transparent 22%, black 42%, black 80%, transparent 100%);
-    -webkit-mask:radial-gradient(circle, transparent 22%, black 42%, black 80%, transparent 100%);
-    filter:blur(1px);animation:beamsSpin 200s linear infinite}
+      transparent 0deg 6deg, rgba(167,139,250,.14) 10deg 16deg,
+      transparent 20deg 36deg, rgba(56,189,248,.12) 40deg 46deg,
+      transparent 50deg 66deg, rgba(244,114,182,.14) 70deg 76deg,
+      transparent 80deg 96deg, rgba(251,146,60,.12) 100deg 106deg,
+      transparent 110deg 126deg, rgba(94,234,212,.12) 130deg 136deg,
+      transparent 140deg 156deg, rgba(167,139,250,.14) 160deg 166deg,
+      transparent 170deg 186deg, rgba(56,189,248,.12) 190deg 196deg,
+      transparent 200deg 216deg, rgba(244,114,182,.14) 220deg 226deg,
+      transparent 230deg 246deg, rgba(251,146,60,.12) 250deg 256deg,
+      transparent 260deg 276deg, rgba(94,234,212,.12) 280deg 286deg,
+      transparent 290deg 306deg, rgba(167,139,250,.14) 310deg 316deg,
+      transparent 320deg 336deg, rgba(56,189,248,.12) 340deg 346deg,
+      transparent 350deg 360deg);
+    mask:radial-gradient(60% 60% at 50% 40%, black 20%, black 70%, transparent 100%);
+    -webkit-mask:radial-gradient(60% 60% at 50% 40%, black 20%, black 70%, transparent 100%);
+    filter:blur(2px);animation:beamsSpin 240s linear infinite;transform-origin:50% 40%}
   @keyframes beamsSpin{to{transform:rotate(360deg)}}
-  /* Concentric aura rings */
-  .ring{position:absolute;border-radius:50%;pointer-events:none}
-  .r1{inset:5%;border:1px solid rgba(167,139,250,.22);animation:spin 90s linear infinite}
-  .r2{inset:16%;border:1px solid rgba(56,189,248,.22);animation:spin 110s linear infinite reverse}
-  .r3{inset:26%;border:1px solid rgba(244,114,182,.22);animation:spin 130s linear infinite}
-  .r4{inset:34%;border:1px dashed rgba(94,234,212,.35);animation:spin 60s linear infinite reverse}
-  .r1::after,.r2::after,.r3::after,.r4::after{content:"";position:absolute;top:-3px;left:50%;
-    width:8px;height:8px;border-radius:50%;transform:translateX(-50%)}
-  .r1::after{background:var(--violet);box-shadow:0 0 14px var(--violet)}
-  .r2::after{background:var(--blue);box-shadow:0 0 14px var(--blue)}
-  .r3::after{background:var(--rose);box-shadow:0 0 14px var(--rose)}
-  .r4::after{background:var(--teal);box-shadow:0 0 14px var(--teal)}
-  @keyframes spin{to{transform:rotate(360deg)}}
-  /* Central luminous core — abstract, geometric, not deity */
-  .core{position:absolute;width:30%;aspect-ratio:1;border-radius:50%;
+  /* Aureole behind head — layered halo */
+  .aureole{position:absolute;top:6%;left:50%;transform:translateX(-50%);
+    width:52%;aspect-ratio:1;border-radius:50%;pointer-events:none;
     background:
-      radial-gradient(circle at 42% 38%, rgba(255,255,255,.95), transparent 32%),
-      radial-gradient(circle, rgba(94,234,212,.9) 0%, rgba(56,189,248,.55) 42%, rgba(167,139,250,.25) 70%, transparent 88%);
+      radial-gradient(circle, rgba(251,146,60,.35) 0%, rgba(244,114,182,.25) 30%, rgba(167,139,250,.15) 55%, transparent 75%);
+    filter:blur(4px);animation:breathe 8s ease-in-out infinite}
+  @keyframes breathe{ 0%,100%{transform:translateX(-50%) scale(.96)} 50%{transform:translateX(-50%) scale(1.06)} }
+  /* Central deity figure SVG — dominant central visual */
+  .deity{position:absolute;inset:0;pointer-events:none;
     display:grid;place-items:center;
-    box-shadow:0 0 140px 40px rgba(94,234,212,.32), 0 0 70px 18px rgba(56,189,248,.35), inset 0 0 40px rgba(255,255,255,.4);
-    animation:breathe 6s ease-in-out infinite}
-  .core svg{width:56%;height:56%;opacity:.9;
-    filter:drop-shadow(0 0 8px rgba(4,32,28,.4))}
-  @keyframes breathe{ 0%,100%{transform:scale(.96)} 50%{transform:scale(1.05)} }
-  /* Yantra-inspired geometric accents — interlocking triangles, subtle */
-  .yantra{position:absolute;inset:32%;pointer-events:none;
-    opacity:.35;animation:spin 220s linear infinite}
-  .yantra svg{width:100%;height:100%}
+    filter:drop-shadow(0 0 40px rgba(167,139,250,.35))}
+  .deity svg{width:88%;height:88%}
+  /* Warrior at feet — smaller, looking up */
+  .warrior{position:absolute;bottom:2%;left:50%;transform:translateX(-50%);
+    width:14%;pointer-events:none;
+    filter:drop-shadow(0 -8px 20px rgba(251,146,60,.4))}
+  .warrior svg{width:100%;height:auto;display:block}
+  /* Fire glow at feet */
+  .firebase{position:absolute;bottom:-2%;left:50%;transform:translateX(-50%);
+    width:65%;height:22%;pointer-events:none;
+    background:
+      radial-gradient(60% 100% at 50% 100%, rgba(251,146,60,.55), transparent 60%),
+      radial-gradient(40% 80% at 40% 100%, rgba(244,114,182,.35), transparent 60%),
+      radial-gradient(40% 80% at 60% 100%, rgba(139,92,246,.35), transparent 60%);
+    filter:blur(14px);animation:firepulse 4s ease-in-out infinite alternate}
+  @keyframes firepulse{ from{opacity:.7} to{opacity:1} }
 
   /* --- Sections --- */
   section{position:relative;z-index:2;padding:80px 24px}
@@ -322,39 +320,184 @@
     </div>
     <div class="cosmic">
       <div class="beams"></div>
-      <div class="ring r1"></div>
-      <div class="ring r2"></div>
-      <div class="ring r3"></div>
-      <div class="ring r4"></div>
-      <!-- Subtle yantra-inspired geometry (interlocking triangles). Ancient roots,
-           reads as modern sacred-geometry, not a specific deity's symbol. -->
-      <div class="yantra">
-        <svg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
-          <g fill="none" stroke="rgba(167,139,250,.55)" stroke-width=".8">
-            <polygon points="100,20 180,150 20,150"/>
-            <polygon points="100,180 20,50 180,50"/>
-            <polygon points="100,50 155,130 45,130" stroke="rgba(56,189,248,.5)"/>
-            <polygon points="100,150 45,70 155,70" stroke="rgba(56,189,248,.5)"/>
-            <circle cx="100" cy="100" r="70" stroke="rgba(94,234,212,.35)"/>
-            <circle cx="100" cy="100" r="42" stroke="rgba(244,114,182,.35)"/>
+      <div class="aureole"></div>
+      <div class="deity">
+        <svg viewBox="0 0 400 480" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+          <defs>
+            <linearGradient id="bodyGrad" x1="0" y1="0" x2="0" y2="1">
+              <stop offset="0%"  stop-color="#5eead4" stop-opacity=".9"/>
+              <stop offset="35%" stop-color="#38bdf8" stop-opacity=".85"/>
+              <stop offset="70%" stop-color="#a78bfa" stop-opacity=".8"/>
+              <stop offset="100%" stop-color="#f472b6" stop-opacity=".75"/>
+            </linearGradient>
+            <linearGradient id="silhouette" x1="0" y1="0" x2="0" y2="1">
+              <stop offset="0%"  stop-color="#0a0c14" stop-opacity=".55"/>
+              <stop offset="60%" stop-color="#050710" stop-opacity=".85"/>
+              <stop offset="100%" stop-color="#050710" stop-opacity=".95"/>
+            </linearGradient>
+            <radialGradient id="glow" cx=".5" cy=".4" r=".5">
+              <stop offset="0%" stop-color="#fff" stop-opacity=".7"/>
+              <stop offset="100%" stop-color="#fff" stop-opacity="0"/>
+            </radialGradient>
+            <radialGradient id="jewel" cx=".5" cy=".5" r=".5">
+              <stop offset="0%" stop-color="#fef3c7"/>
+              <stop offset="100%" stop-color="#fb923c"/>
+            </radialGradient>
+          </defs>
+
+          <!-- Inner cosmic aura behind the figure -->
+          <ellipse cx="200" cy="180" rx="150" ry="200" fill="url(#glow)" opacity=".6"/>
+
+          <!-- CROWN — layered spiky ornament -->
+          <g stroke="rgba(251,146,60,.7)" stroke-width="1" fill="rgba(251,146,60,.15)">
+            <!-- Central peak -->
+            <path d="M 200 20 L 210 55 L 190 55 Z"/>
+            <!-- Side peaks -->
+            <path d="M 175 35 L 185 62 L 168 62 Z"/>
+            <path d="M 225 35 L 232 62 L 215 62 Z"/>
+            <path d="M 155 48 L 165 70 L 148 70 Z"/>
+            <path d="M 245 48 L 252 70 L 235 70 Z"/>
+            <path d="M 140 62 L 148 80 L 132 80 Z"/>
+            <path d="M 260 62 L 268 80 L 252 80 Z"/>
+          </g>
+          <!-- Crown jewels -->
+          <circle cx="200" cy="45" r="4" fill="url(#jewel)"/>
+          <circle cx="180" cy="55" r="2.5" fill="url(#jewel)"/>
+          <circle cx="220" cy="55" r="2.5" fill="url(#jewel)"/>
+
+          <!-- HEAD -->
+          <ellipse cx="200" cy="100" rx="30" ry="38" fill="url(#silhouette)" stroke="rgba(94,234,212,.4)" stroke-width=".8"/>
+          <!-- Third eye + face marks -->
+          <circle cx="200" cy="92" r="2" fill="url(#jewel)"/>
+          <line x1="192" y1="105" x2="208" y2="105" stroke="rgba(251,146,60,.5)" stroke-width=".6"/>
+
+          <!-- NECK + JEWELRY -->
+          <rect x="192" y="135" width="16" height="12" fill="url(#silhouette)"/>
+          <path d="M 175 148 Q 200 158 225 148 L 220 152 Q 200 160 180 152 Z" fill="rgba(251,146,60,.4)" stroke="rgba(251,146,60,.6)" stroke-width=".6"/>
+          <circle cx="200" cy="156" r="3" fill="url(#jewel)"/>
+
+          <!-- TORSO -->
+          <path d="M 200 148
+                   L 165 165 L 152 200 L 148 240 L 152 275 L 165 300
+                   L 200 310
+                   L 235 300 L 248 275 L 252 240 L 248 200 L 235 165 Z"
+                fill="url(#silhouette)" stroke="rgba(94,234,212,.35)" stroke-width=".8"/>
+          <!-- Torso jewelry lines -->
+          <path d="M 155 200 Q 200 208 245 200" fill="none" stroke="rgba(251,146,60,.5)" stroke-width=".8"/>
+          <path d="M 158 235 Q 200 245 242 235" fill="none" stroke="rgba(251,146,60,.4)" stroke-width=".6"/>
+          <path d="M 163 265 Q 200 275 237 265" fill="none" stroke="rgba(251,146,60,.4)" stroke-width=".6"/>
+
+          <!-- WAIST BELT -->
+          <rect x="163" y="295" width="74" height="14" fill="rgba(251,146,60,.25)" stroke="rgba(251,146,60,.6)" stroke-width=".8"/>
+          <circle cx="200" cy="302" r="3" fill="url(#jewel)"/>
+
+          <!-- ARMS (6 total: 3 per side, extending at different angles, each with a weapon) -->
+          <!-- Left upper arm (holding chakra) -->
+          <path d="M 172 175 Q 130 155 90 130 Q 78 128 76 138 Q 80 148 92 148 Q 130 168 172 190 Z" fill="url(#silhouette)" stroke="rgba(94,234,212,.35)" stroke-width=".6"/>
+          <!-- Chakra in left hand -->
+          <g transform="translate(75 132)">
+            <circle r="18" fill="none" stroke="rgba(94,234,212,.85)" stroke-width="1.4"/>
+            <circle r="12" fill="none" stroke="rgba(94,234,212,.65)" stroke-width=".8"/>
+            <circle r="4" fill="url(#jewel)"/>
+            <g stroke="rgba(94,234,212,.7)" stroke-width=".8">
+              <line x1="-18" y1="0" x2="18" y2="0"/><line x1="0" y1="-18" x2="0" y2="18"/>
+              <line x1="-13" y1="-13" x2="13" y2="13"/><line x1="-13" y1="13" x2="13" y2="-13"/>
+            </g>
+          </g>
+
+          <!-- Right upper arm (holding trishul) -->
+          <path d="M 228 175 Q 270 155 310 130 Q 322 128 324 138 Q 320 148 308 148 Q 270 168 228 190 Z" fill="url(#silhouette)" stroke="rgba(94,234,212,.35)" stroke-width=".6"/>
+          <!-- Trishul in right hand -->
+          <g transform="translate(325 132)" stroke="rgba(251,146,60,.85)" stroke-width="1.4" fill="rgba(251,146,60,.15)">
+            <line x1="0" y1="-30" x2="0" y2="20" stroke-width="2"/>
+            <path d="M -14 -18 L -14 -32 L -10 -32 L -8 -22 Z"/>
+            <path d="M 0 -32 L 4 -34 L 4 -20 L 0 -20 Z"/>
+            <path d="M 14 -18 L 14 -32 L 10 -32 L 8 -22 Z"/>
+          </g>
+
+          <!-- Left mid arm (holding lotus) -->
+          <path d="M 158 220 Q 120 240 88 260 Q 76 262 76 272 Q 82 280 92 274 Q 122 260 158 240 Z" fill="url(#silhouette)" stroke="rgba(94,234,212,.35)" stroke-width=".6"/>
+          <g transform="translate(78 265)" fill="rgba(244,114,182,.5)" stroke="rgba(244,114,182,.8)" stroke-width=".8">
+            <path d="M 0 -12 Q 6 -6 4 4 Q 0 6 -4 4 Q -6 -6 0 -12 Z"/>
+            <path d="M -12 -8 Q -6 -3 -4 6 Q -8 8 -12 6 Q -18 -2 -12 -8 Z"/>
+            <path d="M 12 -8 Q 6 -3 4 6 Q 8 8 12 6 Q 18 -2 12 -8 Z"/>
+            <path d="M -8 4 Q 0 6 8 4 Q 6 12 0 14 Q -6 12 -8 4 Z"/>
+            <circle r="3" fill="url(#jewel)"/>
+          </g>
+
+          <!-- Right mid arm (holding conch) -->
+          <path d="M 242 220 Q 280 240 312 260 Q 324 262 324 272 Q 318 280 308 274 Q 278 260 242 240 Z" fill="url(#silhouette)" stroke="rgba(94,234,212,.35)" stroke-width=".6"/>
+          <g transform="translate(322 265) rotate(15)" fill="rgba(94,234,212,.35)" stroke="rgba(94,234,212,.85)" stroke-width=".8">
+            <path d="M -12 12 Q -14 -8 0 -14 Q 14 -8 12 12 Q 6 6 4 -6 Q -4 -6 -8 6 Q -6 12 -12 12 Z"/>
+            <line x1="0" y1="-14" x2="0" y2="-22" stroke-width="1.2"/>
+          </g>
+
+          <!-- Left lower arm (down at side, holding gada/mace) -->
+          <path d="M 168 275 Q 140 300 130 340 Q 128 348 138 348 Q 144 344 150 320 Q 158 300 168 285 Z" fill="url(#silhouette)"/>
+          <g transform="translate(134 348)" fill="rgba(251,146,60,.35)" stroke="rgba(251,146,60,.8)" stroke-width="1">
+            <ellipse cx="0" cy="0" rx="10" ry="14"/>
+            <line x1="0" y1="14" x2="0" y2="30" stroke-width="1.4"/>
+            <circle r="3" fill="url(#jewel)"/>
+          </g>
+
+          <!-- Right lower arm (holding sword) -->
+          <path d="M 232 275 Q 260 300 270 340 Q 272 348 262 348 Q 256 344 250 320 Q 242 300 232 285 Z" fill="url(#silhouette)"/>
+          <g transform="translate(266 348)" stroke="rgba(94,234,212,.85)" stroke-width="1.2" fill="rgba(94,234,212,.25)">
+            <path d="M 0 0 L -3 -4 L -3 -30 L 3 -30 L 3 -4 Z"/>
+            <path d="M -8 4 L 8 4 L 5 8 L -5 8 Z"/>
+            <line x1="0" y1="8" x2="0" y2="20" stroke-width="1.4"/>
+          </g>
+
+          <!-- FLOWING ROBE / dhoti -->
+          <path d="M 200 310
+                   L 152 320 L 140 380 L 132 460 L 148 468 L 168 460 L 188 400 L 200 470
+                   L 212 400 L 232 460 L 252 468 L 268 460 L 260 380 L 248 320 Z"
+                fill="url(#silhouette)" stroke="rgba(94,234,212,.3)" stroke-width=".8"/>
+          <!-- Robe folds (subtle vertical lines) -->
+          <g stroke="rgba(251,146,60,.25)" stroke-width=".5" fill="none">
+            <line x1="170" y1="330" x2="165" y2="450"/>
+            <line x1="185" y1="335" x2="182" y2="460"/>
+            <line x1="215" y1="335" x2="218" y2="460"/>
+            <line x1="230" y1="330" x2="235" y2="450"/>
+          </g>
+          <!-- Anklets -->
+          <ellipse cx="165" cy="465" rx="15" ry="4" fill="rgba(251,146,60,.3)" stroke="rgba(251,146,60,.7)" stroke-width=".6"/>
+          <ellipse cx="235" cy="465" rx="15" ry="4" fill="rgba(251,146,60,.3)" stroke="rgba(251,146,60,.7)" stroke-width=".6"/>
+
+          <!-- LOTUS PEDESTAL under feet -->
+          <g fill="rgba(244,114,182,.25)" stroke="rgba(244,114,182,.6)" stroke-width=".8">
+            <path d="M 130 475 Q 200 465 270 475 Q 260 480 200 478 Q 140 480 130 475 Z"/>
+            <path d="M 148 470 Q 175 460 200 465 Q 175 468 148 470 Z"/>
+            <path d="M 252 470 Q 225 460 200 465 Q 225 468 252 470 Z"/>
+            <path d="M 180 465 Q 200 455 220 465 Q 200 460 180 465 Z"/>
           </g>
         </svg>
       </div>
-      <div class="core">
-        <!-- Abstract K mark — modern typographic center, not a religious symbol -->
-        <svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+
+      <!-- WARRIOR at the base, looking up at the deity -->
+      <div class="warrior">
+        <svg viewBox="0 0 100 140" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
           <defs>
-            <linearGradient id="kg" x1="0" y1="0" x2="1" y2="1">
-              <stop offset="0%" stop-color="#04201c"/>
-              <stop offset="100%" stop-color="#052a3e"/>
+            <linearGradient id="warriorG" x1="0" y1="0" x2="0" y2="1">
+              <stop offset="0%" stop-color="#0a0c14" stop-opacity=".9"/>
+              <stop offset="100%" stop-color="#050710" stop-opacity=".95"/>
             </linearGradient>
           </defs>
-          <g fill="url(#kg)">
-            <!-- Stylized K glyph -->
-            <path d="M 22 15 L 32 15 L 32 44 L 62 15 L 76 15 L 50 41 L 78 85 L 66 85 L 43 49 L 32 60 L 32 85 L 22 85 Z"/>
-          </g>
+          <!-- Head (looking up — slightly tilted back) -->
+          <circle cx="50" cy="22" r="10" fill="url(#warriorG)"/>
+          <!-- Body kneeling on one knee, torso leaning back looking up -->
+          <path d="M 50 32 L 42 45 L 38 65 L 44 90 L 30 130 L 42 132 L 50 100 L 58 132 L 70 130 L 56 90 L 62 65 L 58 45 Z" fill="url(#warriorG)"/>
+          <!-- Left arm raised in awe/salutation -->
+          <path d="M 42 48 L 30 40 L 22 30 L 26 28 L 34 36 L 46 50 Z" fill="url(#warriorG)"/>
+          <!-- Right arm holding bow -->
+          <path d="M 58 48 L 70 55 L 78 68 L 74 72 L 66 62 L 54 52 Z" fill="url(#warriorG)"/>
+          <!-- Bow -->
+          <path d="M 78 45 Q 92 68 78 92" fill="none" stroke="rgba(251,146,60,.55)" stroke-width="1.2"/>
+          <line x1="79" y1="47" x2="79" y2="90" stroke="rgba(251,146,60,.4)" stroke-width=".7"/>
         </svg>
       </div>
+
+      <div class="firebase"></div>
     </div>
     <p class="hero-quote"><strong>Ancient wisdom.</strong> Modern threats. <strong>One security stack.</strong></p>
   </div>
