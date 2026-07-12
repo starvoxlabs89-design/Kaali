@@ -13,7 +13,7 @@
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Ctext y='26' font-size='28' font-family='serif' fill='%235eead4'%3E%E0%A5%A5%3C/text%3E%3C/svg%3E">
 <style>
   :root{
-    --bg:#050710; --bg2:#0a0c14; --panel:#0e1220; --panel2:#141826;
+    --bg:#000000; --bg2:#050508; --panel:#08080c; --panel2:#0d0d12;
     --line:#1e2436; --line2:#2a3149;
     --text:#e6edf3; --dim:#8b97a6; --dim2:#5b6674;
     --teal:#5eead4; --blue:#38bdf8; --violet:#a78bfa; --rose:#f472b6;
@@ -32,28 +32,8 @@
   a{color:inherit;text-decoration:none}
   ::selection{background:var(--teal);color:#04201c}
 
-  /* --- Cosmic backdrop — layered nebulae + starfield + fire glow --- */
-  .cosmos{position:fixed;inset:0;z-index:0;pointer-events:none;overflow:hidden}
-  .cosmos::before,.cosmos::after{content:"";position:absolute;inset:-30%;
-    background:
-      radial-gradient(60% 60% at 50% 42%, rgba(139,92,246,.28), transparent 60%),
-      radial-gradient(45% 45% at 20% 25%, rgba(167,139,250,.24), transparent 65%),
-      radial-gradient(50% 50% at 82% 18%, rgba(56,189,248,.22), transparent 60%),
-      radial-gradient(55% 55% at 78% 82%, rgba(244,114,182,.28), transparent 60%),
-      radial-gradient(40% 40% at 20% 78%, rgba(94,234,212,.16), transparent 65%),
-      radial-gradient(35% 35% at 50% 95%, rgba(251,146,60,.22), transparent 55%);
-    filter:blur(70px);
-    animation:driftA 50s ease-in-out infinite alternate}
-  .cosmos::after{animation:driftB 65s ease-in-out infinite alternate;opacity:.65;mix-blend-mode:screen}
-  @keyframes driftA{ 0%{transform:translate(0,0) rotate(0) scale(1)} 100%{transform:translate(-3%,2%) rotate(4deg) scale(1.05)} }
-  @keyframes driftB{ 0%{transform:translate(0,0) rotate(0) scale(1)} 100%{transform:translate(4%,-3%) rotate(-6deg) scale(1.08)} }
-  /* Ground-line fire glow — mimics the warm base of the mythological reference */
-  .horizon{position:fixed;left:0;right:0;bottom:0;height:38vh;z-index:1;pointer-events:none;
-    background:
-      radial-gradient(80% 100% at 50% 100%, rgba(251,146,60,.18), transparent 60%),
-      radial-gradient(60% 80% at 40% 100%, rgba(244,114,182,.14), transparent 60%),
-      radial-gradient(60% 80% at 65% 100%, rgba(139,92,246,.18), transparent 60%);
-    filter:blur(30px)}
+  /* --- Pure black theme — no nebulae, no horizon glow --- */
+  .cosmos,.horizon{display:none}
   .stars{position:fixed;inset:0;z-index:0;pointer-events:none;
     background-image:
       radial-gradient(1.5px 1.5px at 8% 12%, #fff, transparent),
@@ -134,10 +114,10 @@
   .hero-quote strong{color:var(--text);font-style:normal;font-weight:600}
   .hero-cta{display:flex;gap:12px;justify-content:center;margin-top:28px;flex-wrap:wrap}
 
-  /* --- Rakshak Constellation live guardian net --- */
+  /* --- Rakshak Constellation live guardian net (black theme, high-life) --- */
   .rakshak-hero{position:relative;width:min(920px,96vw);aspect-ratio:1;margin:32px auto 0}
   #rakshak{position:absolute;inset:0;width:100%;height:100%;display:block;
-    filter:drop-shadow(0 0 40px rgba(94,234,212,.25))}
+    filter:drop-shadow(0 0 60px rgba(94,234,212,.4))}
   /* Radiant light beams from behind the figure */
   .beams{position:absolute;inset:0;pointer-events:none;
     background:conic-gradient(from 0deg,
@@ -547,9 +527,11 @@ const io = new IntersectionObserver(entries => {
 }, {rootMargin:'0px 0px -10% 0px', threshold:.05});
 document.querySelectorAll('.reveal').forEach(el => io.observe(el));
 
-// --- Rakshak Constellation live hero visual ---
-// 108 guardian stars form a live protective perimeter around the Kaali core.
-// Threats fired from the outer edge get intercepted with a teal energy pulse.
+// --- Rakshak Constellation — live guardian net (black theme, high-life) ---
+// 108 guardian stars form a rotating protective perimeter around the Kaali core.
+// Threats get intercepted with energy zaps + expanding shockwaves.
+// Rotating chakra spokes + counter-rotating inner ring + ambient particles +
+// pulsing core rings + occasional inter-star lightning.
 (function initRakshak(){
   const cv = document.getElementById('rakshak');
   if (!cv) return;
@@ -566,56 +548,157 @@ document.querySelectorAll('.reveal').forEach(el => io.observe(el));
   const ro = new ResizeObserver(fit); ro.observe(parent);
 
   const N = 108;
-  const stars = Array.from({length: N}, (_, i) => {
-    const a = i / N * Math.PI * 2;
-    return { a, jitter: 0.94 + Math.random() * 0.12, pulse: Math.random() };
-  });
+  const stars = Array.from({length: N}, (_, i) => ({
+    a: i / N * Math.PI * 2,
+    jitter: 0.94 + Math.random() * 0.12,
+    pulse: Math.random(),
+    flash: 0,             // brightens when zapping a threat
+  }));
+
+  const INNER_N = 36;
+  const inner = Array.from({length: INNER_N}, (_, i) => ({
+    a: i / INNER_N * Math.PI * 2,
+    pulse: Math.random(),
+  }));
+
+  // Ambient dust particles floating between core and ring
+  const DUST_N = 60;
+  const dust = Array.from({length: DUST_N}, () => ({
+    a: Math.random() * Math.PI * 2,
+    r: 0.10 + Math.random() * 0.16,       // fraction of ring radius
+    speed: (Math.random() - 0.5) * 0.0008, // orbit speed
+    life: Math.random(),
+  }));
 
   const threats = [];
+  const ripples = [];       // expanding shockwaves from kills
+  const pulses = [];        // pulses from core outward
+  const zaps = [];          // energy zap arcs from stars to threats
   let killed = 0;
+
   function spawn(){
     if (document.hidden) return;
     const a = Math.random() * Math.PI * 2;
     const r = Math.min(W, H) * 0.58;
     threats.push({
-      x: Math.cos(a) * r,
-      y: Math.sin(a) * r,
-      vx: -Math.cos(a) * (2.4 + Math.random() * 1.6) * DPR,
-      vy: -Math.sin(a) * (2.4 + Math.random() * 1.6) * DPR,
+      x: Math.cos(a) * r, y: Math.sin(a) * r,
+      vx: -Math.cos(a) * (2.2 + Math.random() * 1.8) * DPR,
+      vy: -Math.sin(a) * (2.2 + Math.random() * 1.8) * DPR,
       dead: false, flash: 0,
     });
   }
-  const spawnTimer = setInterval(spawn, 240);
+  setInterval(spawn, 180);
+  // Core pulse every 2.4s
+  setInterval(() => { if (!document.hidden) pulses.push({ r: 0, life: 1 }); }, 2400);
+  // Push an initial pulse right away
+  pulses.push({ r: 0, life: 1 });
 
   let raf;
   function frame(t){
-    ct.fillStyle = 'rgba(5,7,16,0.35)';
+    // Slight motion blur — trail effect
+    ct.fillStyle = 'rgba(0,0,0,0.28)';
     ct.fillRect(0, 0, W, H);
     ct.save();
     ct.translate(W / 2, H / 2);
 
     const CORE_R = Math.min(W, H) * 0.05;
     const RING_R = Math.min(W, H) * 0.30;
+    const INNER_R = Math.min(W, H) * 0.16;
 
-    // Central Kaali core — the thing being protected
-    const coreGrad = ct.createRadialGradient(0, 0, 0, 0, 0, CORE_R * 2.4);
-    coreGrad.addColorStop(0, 'rgba(94,234,212,0.9)');
-    coreGrad.addColorStop(0.5, 'rgba(56,189,248,0.35)');
+    // --- BACKGROUND: rotating chakra spokes (12 rays behind everything) ---
+    const spokeRot = t * 0.00008;
+    ct.save(); ct.rotate(spokeRot);
+    for (let i = 0; i < 12; i++) {
+      const a = i / 12 * Math.PI * 2;
+      const gradSpoke = ct.createLinearGradient(0, 0, Math.cos(a) * RING_R * 2.2, Math.sin(a) * RING_R * 2.2);
+      gradSpoke.addColorStop(0, 'rgba(94,234,212,0)');
+      gradSpoke.addColorStop(0.4, 'rgba(94,234,212,0.06)');
+      gradSpoke.addColorStop(1, 'rgba(94,234,212,0)');
+      ct.strokeStyle = gradSpoke;
+      ct.lineWidth = 1.5 * DPR;
+      ct.beginPath(); ct.moveTo(0, 0);
+      ct.lineTo(Math.cos(a) * RING_R * 2.2, Math.sin(a) * RING_R * 2.2);
+      ct.stroke();
+    }
+    ct.restore();
+
+    // --- Core pulses radiating outward ---
+    for (let i = pulses.length - 1; i >= 0; i--) {
+      const p = pulses[i];
+      p.r += 1.4 * DPR;
+      p.life = Math.max(0, 1 - p.r / (RING_R * 1.2));
+      if (p.life <= 0) { pulses.splice(i, 1); continue; }
+      ct.strokeStyle = 'rgba(94,234,212,' + (p.life * 0.35).toFixed(3) + ')';
+      ct.lineWidth = 1.4 * DPR;
+      ct.beginPath(); ct.arc(0, 0, p.r, 0, Math.PI * 2); ct.stroke();
+    }
+
+    // --- Ambient dust between core and ring ---
+    for (const d of dust) {
+      d.a += d.speed;
+      const rr = RING_R * d.r;
+      const x = Math.cos(d.a) * rr, y = Math.sin(d.a) * rr;
+      const p = Math.sin(t / 900 + d.life * Math.PI * 2) * 0.5 + 0.5;
+      ct.fillStyle = 'rgba(94,234,212,' + (0.25 + p * 0.3).toFixed(3) + ')';
+      ct.beginPath(); ct.arc(x, y, 1.2 * DPR, 0, Math.PI * 2); ct.fill();
+    }
+
+    // --- Inner counter-rotating ring (smaller, dashed feel via dots) ---
+    const innerRot = -t * 0.0002;
+    ct.save(); ct.rotate(innerRot);
+    for (let i = 0; i < INNER_N; i++) {
+      const s = inner[i];
+      const x = Math.cos(s.a) * INNER_R, y = Math.sin(s.a) * INNER_R;
+      const p = Math.sin(t / 500 + s.pulse * Math.PI * 2) * 0.5 + 0.5;
+      ct.fillStyle = 'rgba(56,189,248,' + (0.25 + p * 0.35).toFixed(3) + ')';
+      ct.beginPath(); ct.arc(x, y, (1.4 + p) * DPR, 0, Math.PI * 2); ct.fill();
+    }
+    // Faint inner ring line
+    ct.strokeStyle = 'rgba(56,189,248,0.08)'; ct.lineWidth = 0.6 * DPR;
+    ct.beginPath(); ct.arc(0, 0, INNER_R, 0, Math.PI * 2); ct.stroke();
+    ct.restore();
+
+    // --- Central Kaali core — pulsing gradient ---
+    const breath = Math.sin(t / 900) * 0.15 + 1;
+    const coreGrad = ct.createRadialGradient(0, 0, 0, 0, 0, CORE_R * 2.6 * breath);
+    coreGrad.addColorStop(0, 'rgba(255,255,255,0.9)');
+    coreGrad.addColorStop(0.15, 'rgba(94,234,212,0.9)');
+    coreGrad.addColorStop(0.55, 'rgba(56,189,248,0.35)');
     coreGrad.addColorStop(1, 'rgba(56,189,248,0)');
     ct.fillStyle = coreGrad;
-    ct.beginPath(); ct.arc(0, 0, CORE_R * 2.4, 0, Math.PI * 2); ct.fill();
+    ct.beginPath(); ct.arc(0, 0, CORE_R * 2.6 * breath, 0, Math.PI * 2); ct.fill();
+    // Bright center
+    ct.fillStyle = 'rgba(255,255,255,' + (0.85 + Math.sin(t / 400) * 0.15).toFixed(3) + ')';
+    ct.beginPath(); ct.arc(0, 0, CORE_R * 0.35, 0, Math.PI * 2); ct.fill();
+
+    // --- ROTATING guardian ring ---
+    const ringRot = t * 0.00012; // slow rotation
+    ct.save(); ct.rotate(ringRot);
 
     // Mesh connections between neighboring guardians
-    ct.strokeStyle = 'rgba(94,234,212,0.09)';
+    ct.strokeStyle = 'rgba(94,234,212,0.1)';
     ct.lineWidth = 0.6 * DPR;
     for (let i = 0; i < N; i++) {
-      for (let j = i + 1; j < i + 8 && j < N; j++) {
+      for (let j = i + 1; j < i + 7 && j < N; j++) {
         const a = stars[i], b = stars[j];
         const ra = RING_R * a.jitter, rb = RING_R * b.jitter;
-        const ax = Math.cos(a.a) * ra, ay = Math.sin(a.a) * ra;
-        const bx = Math.cos(b.a) * rb, by = Math.sin(b.a) * rb;
-        ct.beginPath(); ct.moveTo(ax, ay); ct.lineTo(bx, by); ct.stroke();
+        ct.beginPath();
+        ct.moveTo(Math.cos(a.a) * ra, Math.sin(a.a) * ra);
+        ct.lineTo(Math.cos(b.a) * rb, Math.sin(b.a) * rb);
+        ct.stroke();
       }
+    }
+
+    // Occasional lightning between random star pairs
+    if (Math.random() < 0.06) {
+      const i = Math.floor(Math.random() * N);
+      const j = (i + 15 + Math.floor(Math.random() * 30)) % N;
+      const a = stars[i], b = stars[j];
+      const ax = Math.cos(a.a) * RING_R * a.jitter, ay = Math.sin(a.a) * RING_R * a.jitter;
+      const bx = Math.cos(b.a) * RING_R * b.jitter, by = Math.sin(b.a) * RING_R * b.jitter;
+      ct.strokeStyle = 'rgba(94,234,212,0.6)';
+      ct.lineWidth = 1.2 * DPR;
+      ct.beginPath(); ct.moveTo(ax, ay); ct.lineTo(bx, by); ct.stroke();
     }
 
     // Guardian stars
@@ -624,37 +707,90 @@ document.querySelectorAll('.reveal').forEach(el => io.observe(el));
       const rr = RING_R * s.jitter;
       const x = Math.cos(s.a) * rr, y = Math.sin(s.a) * rr;
       const p = Math.sin(t / 700 + s.pulse * Math.PI * 2) * 0.5 + 0.5;
-      // Brighten if a live threat is nearby
-      let brightness = 0.5 + p * 0.5;
-      for (const th of threats) {
-        if (th.dead) continue;
-        if (Math.hypot(th.x - x, th.y - y) < 60 * DPR) brightness = 1;
+      // Decay any recent flash from a zap
+      s.flash *= 0.90;
+      const brightness = Math.min(1, 0.5 + p * 0.5 + s.flash);
+      // Halo if flashing
+      if (s.flash > 0.05) {
+        const g = ct.createRadialGradient(x, y, 0, x, y, 10 * DPR * s.flash);
+        g.addColorStop(0, 'rgba(94,234,212,' + (s.flash * 0.8).toFixed(3) + ')');
+        g.addColorStop(1, 'rgba(94,234,212,0)');
+        ct.fillStyle = g;
+        ct.beginPath(); ct.arc(x, y, 10 * DPR * s.flash, 0, Math.PI * 2); ct.fill();
       }
       ct.fillStyle = 'rgba(94,234,212,' + brightness.toFixed(3) + ')';
-      ct.beginPath(); ct.arc(x, y, (2 + p * 1.5) * DPR, 0, Math.PI * 2); ct.fill();
+      ct.beginPath(); ct.arc(x, y, (2 + p * 1.5 + s.flash * 2) * DPR, 0, Math.PI * 2); ct.fill();
     }
 
-    // Threats — inbound
+    ct.restore(); // end ring rotation
+
+    // --- Threats + energy zaps ---
     for (let i = threats.length - 1; i >= 0; i--) {
       const th = threats[i];
       if (th.dead) {
         th.flash *= 0.9;
         if (th.flash < 0.02) { threats.splice(i, 1); continue; }
-        const g = ct.createRadialGradient(th.x, th.y, 0, th.x, th.y, 34 * DPR * th.flash);
+        const g = ct.createRadialGradient(th.x, th.y, 0, th.x, th.y, 40 * DPR * th.flash);
         g.addColorStop(0, 'rgba(94,234,212,' + th.flash.toFixed(3) + ')');
         g.addColorStop(1, 'rgba(94,234,212,0)');
         ct.fillStyle = g;
-        ct.beginPath(); ct.arc(th.x, th.y, 34 * DPR, 0, Math.PI * 2); ct.fill();
+        ct.beginPath(); ct.arc(th.x, th.y, 40 * DPR, 0, Math.PI * 2); ct.fill();
         continue;
       }
       th.x += th.vx; th.y += th.vy;
       const d = Math.hypot(th.x, th.y);
-      if (d < RING_R) { th.dead = true; th.flash = 1; killed++; }
-      ct.fillStyle = 'rgba(248,113,113,0.95)';
+      if (d < RING_R) {
+        th.dead = true; th.flash = 1; killed++;
+        ripples.push({ x: th.x, y: th.y, r: 0, life: 1 });
+        // Flash the 3 nearest guardian stars (accounting for rotation)
+        const inv = -ringRot;
+        const thA = Math.atan2(th.y, th.x) + inv;
+        let closest = [];
+        for (let k = 0; k < N; k++) {
+          const diff = Math.abs(((stars[k].a - thA + Math.PI * 3) % (Math.PI * 2)) - Math.PI);
+          closest.push({ k, diff });
+        }
+        closest.sort((a, b) => a.diff - b.diff);
+        for (let k = 0; k < 3; k++) stars[closest[k].k].flash = 1;
+      }
+      // Draw threat
+      ct.fillStyle = 'rgba(248,113,113,0.98)';
       ct.beginPath(); ct.arc(th.x, th.y, 3 * DPR, 0, Math.PI * 2); ct.fill();
-      ct.strokeStyle = 'rgba(248,113,113,0.35)';
+      // Trail
+      ct.strokeStyle = 'rgba(248,113,113,0.4)';
       ct.lineWidth = 1.5 * DPR;
       ct.beginPath(); ct.moveTo(th.x, th.y); ct.lineTo(th.x + th.vx * 5, th.y + th.vy * 5); ct.stroke();
+
+      // Zap: when a threat gets within 90px of the ring, nearest 2 stars zap it
+      const zapDist = RING_R - d;
+      if (zapDist < 90 * DPR && zapDist > 0) {
+        const inv = -ringRot;
+        const thA = Math.atan2(th.y, th.x) + inv;
+        for (let z = 0; z < 2; z++) {
+          const offset = (z === 0 ? -1 : 1) * 0.05;
+          const targetA = thA + offset;
+          const guardIdx = Math.round(targetA / (Math.PI * 2) * N + N * 100) % N;
+          const s = stars[guardIdx];
+          const rr = RING_R * s.jitter;
+          const sa = s.a - inv; // account for rotation to draw in current frame
+          const sx = Math.cos(sa) * rr, sy = Math.sin(sa) * rr;
+          const alpha = 1 - (zapDist / (90 * DPR));
+          ct.strokeStyle = 'rgba(94,234,212,' + (alpha * 0.7).toFixed(3) + ')';
+          ct.lineWidth = 1.3 * DPR;
+          ct.beginPath(); ct.moveTo(sx, sy); ct.lineTo(th.x, th.y); ct.stroke();
+        }
+      }
+    }
+
+    // --- Shockwave ripples from kills ---
+    for (let i = ripples.length - 1; i >= 0; i--) {
+      const r = ripples[i];
+      r.r += 2.5 * DPR;
+      r.life *= 0.955;
+      if (r.life < 0.02) { ripples.splice(i, 1); continue; }
+      ct.strokeStyle = 'rgba(94,234,212,' + (r.life * 0.5).toFixed(3) + ')';
+      ct.lineWidth = 1.6 * DPR;
+      ct.beginPath(); ct.arc(r.x, r.y, r.r, 0, Math.PI * 2); ct.stroke();
     }
 
     ct.restore();
@@ -662,10 +798,9 @@ document.querySelectorAll('.reveal').forEach(el => io.observe(el));
   }
   raf = requestAnimationFrame(frame);
 
-  // Pause when tab hidden to save battery
   document.addEventListener('visibilitychange', () => {
-    if (document.hidden) { cancelAnimationFrame(raf); }
-    else { raf = requestAnimationFrame(frame); }
+    if (document.hidden) cancelAnimationFrame(raf);
+    else raf = requestAnimationFrame(frame);
   });
 })();
 
