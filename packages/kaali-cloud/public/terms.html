@@ -1,0 +1,85 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Kaali — Terms of Service</title>
+<style>
+  body{margin:0;background:#0a0c10;color:#e6edf3;font-family:Inter,system-ui,sans-serif;line-height:1.65}
+  main{max-width:720px;margin:0 auto;padding:60px 24px}
+  h1{font-size:28px;margin:0 0 6px}
+  h2{font-size:18px;margin-top:28px}
+  .dim{color:#8b97a6;font-size:14px;margin-bottom:24px}
+  a{color:#38bdf8}
+  code{background:#11151c;border:1px solid #222a36;padding:1px 6px;border-radius:6px;font-size:13px;font-family:ui-monospace,monospace}
+  ul{padding-left:22px}
+  li{margin:6px 0}
+</style>
+</head>
+<body>
+<main>
+  <h1>Terms of Service</h1>
+  <div class="dim">Version v1-2026-07 · Kaali is a product of Starvox Labs Pvt Ltd, Mumbai, India. Governing law: India.</div>
+
+  <p>By using Kaali (the website at kaali.io, the dashboard at app.kaali.io, the API at api.kaali.io, the CLI <code>@kaali/cli</code>, the runtime library <code>@kaali/guard</code>, or any other Kaali-branded service — collectively the <strong>"Service"</strong>) you agree to these terms. If you don't agree, don't use the Service.</p>
+
+  <h2>1. What Kaali is</h2>
+  <p>Kaali is an open-source security scanner and runtime guard for AI applications, plus an optional hosted dashboard (<strong>"Kaali Cloud"</strong>) that stores your scan results and guard events and generates DPDP / ISO-42001 / OWASP-LLM evidence reports. The scanner and guard are released under the <a href="https://opensource.org/licenses/MIT">MIT License</a>; the Cloud is a hosted service.</p>
+
+  <h2>2. Your account</h2>
+  <ul>
+    <li>You must be at least 18, or the age of digital consent in your jurisdiction, and provide accurate signup information.</li>
+    <li>Keep your password and API keys confidential. You are responsible for all activity under your account and keys.</li>
+    <li>One person or organisation per account. Sharing credentials is prohibited.</li>
+  </ul>
+
+  <h2>3. Acceptable use</h2>
+  <p>You agree not to:</p>
+  <ul>
+    <li>Scan or probe systems you do not own or have explicit written authorisation to test — Kaali's active probes (<code>--ai</code>, <code>--ai-indirect</code>, <code>--mcp</code>) are defensive tools; using them against third-party systems without permission may violate India's IT Act, 2000 §§43/66 and equivalent laws elsewhere.</li>
+    <li>Reverse-engineer, disassemble, or attempt to derive the source of any non-open-source part of the Service (the Cloud backend).</li>
+    <li>Use the Service to build, train, or improve a competing security-scanning or LLM-guardrail product.</li>
+    <li>Send us unlawful, harmful, or infringing content, or content that violates a third party's rights.</li>
+    <li>Circumvent rate limits, quotas, or authentication.</li>
+    <li>Use the Service in an application where its failure could reasonably be expected to result in death, personal injury, or severe physical or environmental damage.</li>
+  </ul>
+
+  <h2>4. The MIT-licensed parts</h2>
+  <p>Kaali's CLI (<code>@kaali/cli</code>) and runtime guard (<code>@kaali/guard</code>) are open source under the MIT License. Nothing in these Terms restricts the rights the MIT License grants you for those specific packages. These Terms govern the Cloud service, this website, the API, and any Kaali-branded services beyond the MIT-licensed source.</p>
+
+  <h2>5. Fees & plans</h2>
+  <p>The core Cloud tier is currently free while Kaali is in public beta. Paid tiers, if any, will be introduced with advance notice and only apply after you actively upgrade. Fees, when charged, are in Indian Rupees, inclusive of GST where applicable, and non-refundable except where required by law.</p>
+
+  <h2>6. Your data & privacy</h2>
+  <p>How we handle personal data is governed by our <a href="/privacy.html">Privacy Policy</a>, which forms part of these Terms. In brief: we don't receive raw prompts or LLM inputs/outputs — only the scan findings and guard events you choose to stream, plus your account data.</p>
+
+  <h2>7. Content you send us</h2>
+  <p>You keep ownership of the scan findings, event payloads, and any content you send to Kaali. You grant Starvox Labs a worldwide, royalty-free, non-exclusive licence to store, process, and display that content solely to operate the Service for you. We may compute aggregate, de-identified statistics from all users' data (e.g., "X% of Indian SaaS sites leak PAN in JS") — no individual account or target is identifiable in any such statistic.</p>
+
+  <h2>8. Service availability</h2>
+  <p>We aim for high availability but do not guarantee uninterrupted access. Beta features may be added, changed, or removed without notice. The MIT-licensed CLI and guard run on your infrastructure and are unaffected by Cloud downtime.</p>
+
+  <h2>9. Suspension & termination</h2>
+  <p>We may suspend or terminate your account if you violate these Terms, if we're required to by law, or if your account is inactive for more than 24 months. You can terminate at any time by using "Delete my account" in the dashboard — data is erased per DPDP §12 within 30 days.</p>
+
+  <h2>10. Disclaimers</h2>
+  <p>The Service is provided <strong>"AS IS"</strong> without warranties of any kind. Security is a moving target: Kaali detects a defined set of known and heuristically-identifiable threats — it does not guarantee that your application is secure, DPDP-compliant, or free of vulnerabilities. Kaali is a layer in a defence-in-depth strategy, not a substitute for one. Findings may include false positives and may miss real issues. You are responsible for reviewing findings and taking appropriate action.</p>
+
+  <h2>11. Limitation of liability</h2>
+  <p>To the maximum extent permitted by law, Starvox Labs Pvt Ltd will not be liable for indirect, incidental, special, consequential, or punitive damages, or any loss of profits, revenue, data, or goodwill, arising out of or relating to the Service. Our total liability for any claim relating to the Service is capped at the greater of (a) the fees you paid us in the 12 months before the claim, or (b) INR 10,000. Nothing here limits liability that cannot be limited by law.</p>
+
+  <h2>12. Indemnity</h2>
+  <p>You agree to indemnify Starvox Labs Pvt Ltd against third-party claims arising from your use of the Service in violation of these Terms — in particular claims arising from scanning systems you were not authorised to test.</p>
+
+  <h2>13. Changes to these Terms</h2>
+  <p>We may update these Terms. Material changes will be notified by email to registered users at least 14 days before they take effect. Continued use after the effective date constitutes acceptance.</p>
+
+  <h2>14. Governing law & disputes</h2>
+  <p>These Terms are governed by the laws of India. Disputes are subject to the exclusive jurisdiction of the courts at Mumbai, Maharashtra. Nothing here prevents you from bringing a complaint under the Digital Personal Data Protection Act, 2023 to the Data Protection Board of India.</p>
+
+  <h2>15. Contact</h2>
+  <p>Questions or notices under these Terms: <a href="mailto:hello@kaali.io">hello@kaali.io</a>. Legal or privacy: <a href="mailto:privacy@kaali.io">privacy@kaali.io</a>. Postal: Starvox Labs Pvt Ltd, Mumbai, India.</p>
+
+  <div class="dim" style="margin-top:36px"><a href="/">← Back to sign in</a> · <a href="/privacy.html">Privacy Policy</a></div>
+</main>
+</body>
+</html>
