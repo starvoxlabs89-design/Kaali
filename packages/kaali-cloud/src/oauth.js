@@ -158,8 +158,8 @@ export async function callback(req, res, providerName) {
   const userId = await upsertIdentity(providerName, u, req);
   await grantSession(userId, req, res);
 
-  const next = nextEncoded ? decodeURIComponent(nextEncoded) : "/";
-  const dest = next.startsWith("/") ? `${dashUrl()}${next}` : dashUrl();
+  const next = nextEncoded ? decodeURIComponent(nextEncoded) : "/dashboard.html";
+  const dest = next.startsWith("/") ? `${dashUrl()}${next}` : `${dashUrl()}/dashboard.html`;
   return textRedirect(res, dest);
 }
 

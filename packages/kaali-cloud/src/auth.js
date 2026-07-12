@@ -75,7 +75,7 @@ export async function verify(req, res) {
   await q("UPDATE auth_tokens SET used_at=NOW() WHERE id=$1", [row.id]);
   await q("UPDATE users SET verified_at=NOW() WHERE id=$1 AND verified_at IS NULL", [row.user_id]);
   res.statusCode = 302;
-  res.setHeader("Location", `${dashboard()}/?verified=1`);
+  res.setHeader("Location", `${dashboard()}/signin.html?verified=1`);
   return res.end();
 }
 

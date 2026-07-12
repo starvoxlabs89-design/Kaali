@@ -3,185 +3,578 @@
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>Kaali — sign in</title>
+<meta name="theme-color" content="#050710">
+<title>Kaali — the goddess who destroys demons. The stack that destroys attacks.</title>
+<meta name="description" content="Open-source AI security for websites, apps, and agents. Scan any URL. Block prompt injection at runtime. DPDP-native. Made in India.">
+<meta property="og:title" content="Kaali — open-source AI security, made in India">
+<meta property="og:description" content="Watch what your AI reads and says. Free CLI + guard + cloud dashboard.">
+<meta property="og:url" content="https://kaali.io">
+<meta property="og:type" content="website">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Ctext y='26' font-size='28' font-family='serif' fill='%235eead4'%3E%E0%A5%A5%3C/text%3E%3C/svg%3E">
 <style>
   :root{
-    --bg:#0a0c10; --panel:#11151c; --panel2:#161b24; --line:#222a36;
-    --text:#e6edf3; --dim:#8b97a6; --accent:#5eead4; --accent2:#38bdf8;
-    --crit:#f87171; --ok:#34d399;
+    --bg:#050710; --bg2:#0a0c14; --panel:#0e1220; --panel2:#141826;
+    --line:#1e2436; --line2:#2a3149;
+    --text:#e6edf3; --dim:#8b97a6; --dim2:#5b6674;
+    --teal:#5eead4; --blue:#38bdf8; --violet:#a78bfa; --rose:#f472b6;
+    --crit:#f87171; --high:#fb923c; --med:#fbbf24; --ok:#34d399;
+    --serif:'Playfair Display',ui-serif,Georgia,serif;
     --mono:ui-monospace,SFMono-Regular,"SF Mono",Menlo,monospace;
+    --grad:linear-gradient(135deg,var(--teal),var(--blue));
+    --grad2:linear-gradient(135deg,var(--violet),var(--rose));
   }
   *{box-sizing:border-box}
-  body{margin:0;background:radial-gradient(900px 500px at 70% -10%,#101826 0,var(--bg) 55%);
-    color:var(--text);font-family:Inter,-apple-system,system-ui,sans-serif;-webkit-font-smoothing:antialiased;min-height:100vh}
-  .wrap{max-width:460px;margin:0 auto;padding:80px 24px 40px}
-  .brand{display:flex;align-items:center;gap:10px;font-weight:700;font-size:18px;letter-spacing:.2px;margin-bottom:36px}
-  .brand .dot{width:28px;height:28px;border-radius:9px;background:linear-gradient(135deg,var(--accent),var(--accent2));
-    display:grid;place-items:center;color:#04201c;font-size:15px}
-  h1{font-size:28px;line-height:1.15;margin:0 0 8px;letter-spacing:-.01em}
-  h1 .grad{background:linear-gradient(90deg,var(--accent),var(--accent2));-webkit-background-clip:text;background-clip:text;color:transparent}
-  .sub{color:var(--dim);font-size:15px;margin-bottom:26px}
-  .card{background:linear-gradient(180deg,var(--panel),var(--panel2));border:1px solid var(--line);
-    border-radius:16px;padding:24px;box-shadow:0 24px 60px -30px #000}
-  label{display:block;font-size:13px;color:var(--dim);margin:12px 0 6px}
-  input{width:100%;background:#0b0e13;border:1px solid var(--line);border-radius:10px;
-    color:var(--text);font-family:inherit;font-size:14px;padding:11px 12px}
-  input:focus{outline:none;border-color:var(--accent2)}
-  .row{display:flex;align-items:center;gap:8px;font-size:13px;color:var(--dim);margin-top:14px;line-height:1.5}
-  .row a{color:var(--accent2);text-decoration:none}
-  button{margin-top:16px;width:100%;font:inherit;font-weight:600;border-radius:10px;padding:12px;
-    border:none;background:linear-gradient(135deg,var(--accent),var(--accent2));color:#04201c;cursor:pointer}
-  button:hover{filter:brightness(1.08)}
-  button:disabled{opacity:.55;cursor:wait}
-  .tab{display:flex;gap:4px;padding:4px;background:#0b0e13;border:1px solid var(--line);border-radius:12px;margin-bottom:18px}
-  .tab button{margin:0;background:transparent;color:var(--dim);border-radius:8px;padding:9px;font-weight:500}
-  .tab button.on{background:var(--panel2);color:var(--text)}
-  .msg{margin-top:12px;font-size:13px;padding:10px 12px;border-radius:8px;border:1px solid var(--line)}
-  .msg.err{color:var(--crit);background:#1a0e10;border-color:#3a1414}
-  .msg.ok{color:var(--ok);background:#06140f;border-color:#0e2a1c}
-  .foot{margin-top:22px;color:var(--dim);font-size:12px;text-align:center;line-height:1.6}
-  .foot a{color:var(--dim);text-decoration:underline}
-  .oauth{display:flex;flex-direction:column;gap:8px;margin:6px 0 14px}
-  .oauth a{display:flex;align-items:center;justify-content:center;gap:10px;
-    padding:11px 12px;border:1px solid var(--line);border-radius:10px;background:#0f1319;
-    color:var(--text);text-decoration:none;font-weight:500;font-size:14px;transition:.15s}
-  .oauth a:hover{border-color:var(--accent2);background:#12171f}
-  .oauth svg{flex-shrink:0}
-  .divider{display:flex;align-items:center;gap:10px;color:var(--dim);font-size:12px;margin:6px 0 12px}
-  .divider::before,.divider::after{content:"";flex:1;height:1px;background:var(--line)}
-  .consent-note{color:var(--dim);font-size:11.5px;line-height:1.5;margin:8px 0 0;text-align:center}
-  .consent-note a{color:var(--dim);text-decoration:underline}
+  html,body{margin:0;padding:0;background:var(--bg);color:var(--text);
+    font-family:Inter,-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;
+    -webkit-font-smoothing:antialiased;-moz-osx-font-smoothing:grayscale;
+    overflow-x:hidden}
+  body{min-height:100vh}
+  a{color:inherit;text-decoration:none}
+  ::selection{background:var(--teal);color:#04201c}
+
+  /* --- Cosmic backdrop --- */
+  .cosmos{position:fixed;inset:0;z-index:0;pointer-events:none;overflow:hidden}
+  .cosmos::before,.cosmos::after{content:"";position:absolute;inset:-20%;
+    background:
+      radial-gradient(circle at 15% 8%, rgba(167,139,250,.22), transparent 40%),
+      radial-gradient(circle at 90% 20%, rgba(56,189,248,.18), transparent 45%),
+      radial-gradient(circle at 50% 90%, rgba(244,114,182,.14), transparent 50%),
+      radial-gradient(circle at 25% 75%, rgba(94,234,212,.12), transparent 45%);
+    filter:blur(80px);
+    animation:driftA 40s ease-in-out infinite alternate}
+  .cosmos::after{animation:driftB 55s ease-in-out infinite alternate;opacity:.7}
+  @keyframes driftA{ 0%{transform:translate(0,0) rotate(0)} 100%{transform:translate(-4%,3%) rotate(6deg)} }
+  @keyframes driftB{ 0%{transform:translate(0,0) rotate(0)} 100%{transform:translate(5%,-3%) rotate(-8deg)} }
+  .stars{position:fixed;inset:0;z-index:0;pointer-events:none;
+    background-image:
+      radial-gradient(1px 1px at 12% 22%, #fff9, transparent),
+      radial-gradient(1px 1px at 27% 8%, #fffd, transparent),
+      radial-gradient(1.5px 1.5px at 42% 34%, #fffb, transparent),
+      radial-gradient(1px 1px at 63% 12%, #fff9, transparent),
+      radial-gradient(1px 1px at 76% 28%, #fffc, transparent),
+      radial-gradient(1.5px 1.5px at 82% 55%, #fffb, transparent),
+      radial-gradient(1px 1px at 8%  62%, #fff9, transparent),
+      radial-gradient(1px 1px at 34% 78%, #fffb, transparent),
+      radial-gradient(1px 1px at 55% 88%, #fff9, transparent),
+      radial-gradient(1.5px 1.5px at 91% 74%, #fffc, transparent);
+    animation:twinkle 6s ease-in-out infinite alternate}
+  @keyframes twinkle{ from{opacity:.55} to{opacity:1} }
+
+  /* --- Nav --- */
+  nav.top{position:sticky;top:0;z-index:50;padding:14px 24px;
+    backdrop-filter:blur(14px) saturate(140%); -webkit-backdrop-filter:blur(14px) saturate(140%);
+    background:rgba(5,7,16,.55); border-bottom:1px solid rgba(30,36,54,.5)}
+  .nav-inner{max-width:1160px;margin:0 auto;display:flex;align-items:center;justify-content:space-between;gap:16px}
+  .brand{display:flex;align-items:center;gap:10px;font-weight:700;font-size:16px;letter-spacing:.2px}
+  .brand .dot{width:30px;height:30px;border-radius:9px;background:var(--grad);
+    display:grid;place-items:center;color:#04201c;font-size:17px;font-weight:800;
+    box-shadow:0 6px 24px -4px rgba(94,234,212,.35), inset 0 1px 0 rgba(255,255,255,.4)}
+  .nav-links{display:flex;align-items:center;gap:26px;font-size:14px;color:var(--dim)}
+  .nav-links a{transition:.15s}
+  .nav-links a:hover{color:var(--text)}
+  .btn{display:inline-flex;align-items:center;gap:8px;padding:10px 18px;border-radius:10px;
+    font:600 14px/1 inherit;border:1px solid var(--line);background:var(--panel);color:var(--text);
+    cursor:pointer;transition:.15s;text-decoration:none;white-space:nowrap}
+  .btn:hover{border-color:var(--blue)}
+  .btn.primary{border:none;background:var(--grad);color:#04201c;
+    box-shadow:0 8px 30px -8px rgba(94,234,212,.4)}
+  .btn.primary:hover{filter:brightness(1.08);transform:translateY(-1px)}
+  .btn.ghost{background:transparent;border:1px solid rgba(255,255,255,.12)}
+  @media (max-width:720px){ .nav-links a:not(.btn){display:none} }
+
+  /* --- Hero --- */
+  section.hero{position:relative;z-index:2;padding:80px 24px 60px;text-align:center}
+  .hero-inner{max-width:960px;margin:0 auto}
+  .kicker{display:inline-flex;align-items:center;gap:8px;padding:6px 12px;border-radius:100px;
+    background:rgba(94,234,212,.08);border:1px solid rgba(94,234,212,.25);
+    color:var(--teal);font-size:12px;font-weight:600;letter-spacing:.06em;text-transform:uppercase}
+  .kicker::before{content:"";width:6px;height:6px;border-radius:50%;background:var(--teal);
+    box-shadow:0 0 8px var(--teal);animation:pulse 2s ease-in-out infinite}
+  @keyframes pulse{ 50%{opacity:.4} }
+
+  h1.hero{font:400 clamp(44px,7vw,88px)/1.02 var(--serif);
+    margin:22px 0 12px;letter-spacing:-.02em}
+  h1.hero em{font-style:italic;color:transparent;background:var(--grad);
+    -webkit-background-clip:text;background-clip:text}
+  .hero-sub{color:var(--dim);font-size:clamp(15px,1.6vw,18px);line-height:1.55;
+    max-width:640px;margin:0 auto 8px}
+  .hero-quote{margin-top:22px;color:var(--dim);font:italic 400 15px/1.7 var(--serif);
+    letter-spacing:.2px}
+  .hero-quote strong{color:var(--text);font-style:normal;font-weight:600}
+  .hero-cta{display:flex;gap:12px;justify-content:center;margin-top:28px;flex-wrap:wrap}
+
+  /* --- Kaali Chakra (hero visual) --- */
+  .chakra{position:relative;width:min(560px,88vw);aspect-ratio:1;margin:44px auto 0;
+    display:grid;place-items:center;filter:drop-shadow(0 30px 80px rgba(94,234,212,.15))}
+  .ring{position:absolute;inset:0;border-radius:50%;
+    border:1px solid rgba(94,234,212,.25);animation:spin 60s linear infinite}
+  .ring.r2{inset:8%;border-color:rgba(56,189,248,.22);animation-duration:80s;animation-direction:reverse}
+  .ring.r3{inset:18%;border-color:rgba(167,139,250,.22);animation-duration:100s}
+  .ring.r4{inset:28%;border-color:rgba(244,114,182,.18);animation-duration:120s;animation-direction:reverse}
+  .ring::after{content:"";position:absolute;top:-3px;left:50%;width:6px;height:6px;border-radius:50%;
+    background:var(--teal);box-shadow:0 0 12px var(--teal);transform:translateX(-50%)}
+  .ring.r2::after{background:var(--blue);box-shadow:0 0 12px var(--blue)}
+  .ring.r3::after{background:var(--violet);box-shadow:0 0 12px var(--violet)}
+  .ring.r4::after{background:var(--rose);box-shadow:0 0 12px var(--rose)}
+  @keyframes spin{to{transform:rotate(360deg)}}
+  .core{width:38%;aspect-ratio:1;border-radius:50%;background:radial-gradient(circle,rgba(94,234,212,.85),rgba(56,189,248,.4) 50%,rgba(10,12,20,0) 80%);
+    display:grid;place-items:center;position:relative;
+    box-shadow:0 0 60px rgba(94,234,212,.5), inset 0 0 40px rgba(255,255,255,.2);animation:breathe 6s ease-in-out infinite}
+  .core::before{content:"॥";font:800 clamp(60px,10vw,120px)/1 var(--serif);color:#04201c;letter-spacing:-.06em}
+  @keyframes breathe{ 0%,100%{transform:scale(.98)} 50%{transform:scale(1.04)} }
+  /* Trishul spokes */
+  .spokes{position:absolute;inset:0;pointer-events:none}
+  .spoke{position:absolute;top:50%;left:50%;width:44%;height:1px;transform-origin:0 0;
+    background:linear-gradient(90deg,rgba(94,234,212,.5),transparent)}
+  .spoke:nth-child(1){transform:rotate(0deg)}
+  .spoke:nth-child(2){transform:rotate(45deg)}
+  .spoke:nth-child(3){transform:rotate(90deg)}
+  .spoke:nth-child(4){transform:rotate(135deg)}
+  .spoke:nth-child(5){transform:rotate(180deg)}
+  .spoke:nth-child(6){transform:rotate(225deg)}
+  .spoke:nth-child(7){transform:rotate(270deg)}
+  .spoke:nth-child(8){transform:rotate(315deg)}
+
+  /* --- Sections --- */
+  section{position:relative;z-index:2;padding:80px 24px}
+  .container{max-width:1160px;margin:0 auto}
+  h2{font:600 clamp(28px,4vw,44px)/1.15 var(--serif);letter-spacing:-.01em;margin:0 0 12px}
+  h2 em{font-style:italic;background:var(--grad);-webkit-background-clip:text;background-clip:text;color:transparent}
+  .lede{color:var(--dim);font-size:16px;line-height:1.65;max-width:640px;margin:0 0 40px}
+
+  /* --- Live scan --- */
+  .scanwrap{background:linear-gradient(180deg,var(--panel),var(--panel2));
+    border:1px solid var(--line);border-radius:20px;padding:32px;
+    box-shadow:0 24px 60px -30px #000}
+  .scan-row{display:flex;gap:12px;margin-top:16px}
+  .scan-row input{flex:1;background:#08090f;border:1px solid var(--line2);border-radius:12px;
+    color:var(--text);padding:14px 16px;font:15px var(--mono);letter-spacing:-.01em}
+  .scan-row input:focus{outline:none;border-color:var(--blue);box-shadow:0 0 0 3px rgba(56,189,248,.15)}
+  .scan-out{margin-top:16px;font-size:14px}
+  .find{border:1px solid var(--line);border-left-width:4px;border-radius:10px;padding:12px 14px;margin-top:8px;background:rgba(255,255,255,.02)}
+  .find.critical{border-left-color:var(--crit)}
+  .find.high{border-left-color:var(--high)}
+  .find.medium{border-left-color:var(--med)}
+  .find.low{border-left-color:var(--blue)}
+  .find.info{border-left-color:var(--dim)}
+  .sev{font:700 10.5px/1 var(--mono);padding:3px 7px;border-radius:5px;text-transform:uppercase;margin-right:8px}
+  .sev.critical{background:#3a1414;color:var(--crit)} .sev.high{background:#3a2410;color:var(--high)}
+  .sev.medium{background:#3a3410;color:var(--med)} .sev.low{background:#0c1f2a;color:var(--blue)}
+  .sev.info{background:#161b24;color:var(--dim)}
+  .scorehead{display:flex;align-items:center;gap:16px;padding:14px 18px;border:1px solid var(--line);border-radius:12px;background:rgba(8,9,15,.6)}
+  .scorehead .score{font:700 32px/1 var(--mono)}
+
+  /* --- Three pillars --- */
+  .pillars{display:grid;grid-template-columns:repeat(3,1fr);gap:20px}
+  @media (max-width:900px){ .pillars{grid-template-columns:1fr} }
+  .pillar{background:linear-gradient(180deg,var(--panel),var(--panel2));border:1px solid var(--line);
+    border-radius:18px;padding:28px;transition:.2s;position:relative;overflow:hidden}
+  .pillar:hover{border-color:var(--line2);transform:translateY(-2px)}
+  .pillar::before{content:"";position:absolute;inset:0 0 auto 0;height:2px;background:var(--grad);opacity:.6}
+  .pillar h3{font:600 20px/1.2 inherit;margin:14px 0 8px;letter-spacing:-.01em}
+  .pillar p{color:var(--dim);font-size:14.5px;line-height:1.6;margin:0}
+  .pillar code{font:12px var(--mono);background:#08090f;border:1px solid var(--line);padding:2px 7px;border-radius:6px;color:var(--teal)}
+  .pilliconsvg{width:34px;height:34px;border-radius:10px;background:var(--grad);display:grid;place-items:center;color:#04201c;font-weight:800;box-shadow:0 6px 20px -6px rgba(94,234,212,.4)}
+
+  /* --- Threats grid --- */
+  .threats{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}
+  @media (max-width:900px){ .threats{grid-template-columns:1fr 1fr} }
+  @media (max-width:560px){ .threats{grid-template-columns:1fr} }
+  .threat{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:20px 18px;
+    transition:.15s}
+  .threat:hover{border-color:var(--blue);background:var(--panel2)}
+  .threat .tag{font:600 11px/1 var(--mono);color:var(--teal);letter-spacing:.08em;text-transform:uppercase;margin-bottom:8px;display:block}
+  .threat h4{font:600 16px/1.3 inherit;margin:0 0 6px}
+  .threat p{color:var(--dim);font-size:13.5px;line-height:1.55;margin:0}
+
+  /* --- Compliance strip --- */
+  .compliance{display:flex;gap:12px;flex-wrap:wrap;justify-content:center;
+    padding:24px;border:1px solid var(--line);border-radius:20px;background:rgba(14,18,32,.5)}
+  .badge{display:flex;align-items:center;gap:8px;padding:8px 14px;border-radius:100px;
+    background:#08090f;border:1px solid var(--line);font:600 12.5px/1 inherit;color:var(--dim)}
+  .badge.on{color:var(--teal);border-color:rgba(94,234,212,.3)}
+  .badge::before{content:"";width:6px;height:6px;border-radius:50%;background:var(--teal);box-shadow:0 0 8px var(--teal)}
+  .badge:not(.on)::before{background:var(--dim);box-shadow:none}
+
+  /* --- Pricing --- */
+  .plans{display:grid;grid-template-columns:repeat(2,1fr);gap:20px;max-width:800px;margin:0 auto}
+  @media (max-width:720px){ .plans{grid-template-columns:1fr} }
+  .plan{background:var(--panel);border:1px solid var(--line);border-radius:20px;padding:28px}
+  .plan.featured{background:linear-gradient(180deg,rgba(94,234,212,.06),var(--panel));border-color:rgba(94,234,212,.3);position:relative}
+  .plan.featured::before{content:"Free during beta";position:absolute;top:-11px;left:20px;
+    background:var(--grad);color:#04201c;padding:4px 10px;border-radius:100px;font:700 11px/1 var(--mono)}
+  .plan h3{font:600 20px/1 inherit;margin:0 0 6px}
+  .plan .price{font:700 40px/1 var(--serif);margin:6px 0 8px;letter-spacing:-.02em}
+  .plan .price small{font:400 14px/1 inherit;color:var(--dim);vertical-align:middle;margin-left:4px}
+  .plan ul{padding:0;margin:16px 0 20px;list-style:none;font-size:14px;line-height:1.9;color:var(--dim)}
+  .plan li::before{content:"✓ ";color:var(--teal);font-weight:700}
+
+  /* --- Policies cards --- */
+  .policies{display:grid;grid-template-columns:repeat(3,1fr);gap:16px}
+  @media (max-width:900px){ .policies{grid-template-columns:1fr} }
+  .polcard{background:var(--panel);border:1px solid var(--line);border-radius:16px;padding:22px;transition:.15s}
+  .polcard:hover{border-color:var(--blue)}
+  .polcard h4{font:600 15px/1.3 inherit;margin:0 0 8px;display:flex;align-items:center;gap:8px}
+  .polcard h4::before{content:"";width:6px;height:6px;border-radius:50%;background:var(--teal)}
+  .polcard p{color:var(--dim);font-size:13.5px;line-height:1.6;margin:0 0 10px}
+  .polcard a{color:var(--blue);font-size:13.5px;font-weight:500}
+
+  /* --- Footer --- */
+  footer.site{position:relative;z-index:2;padding:60px 24px 40px;
+    border-top:1px solid var(--line);background:rgba(5,7,16,.5)}
+  .foot-grid{max-width:1160px;margin:0 auto;display:grid;grid-template-columns:1.5fr 1fr 1fr 1fr;gap:32px}
+  @media (max-width:900px){ .foot-grid{grid-template-columns:1fr 1fr} }
+  .foot-brand p{color:var(--dim);font-size:13.5px;line-height:1.6;margin:14px 0 0;max-width:280px}
+  .foot-col h5{font:600 13px/1 inherit;text-transform:uppercase;letter-spacing:.1em;color:var(--dim);margin:0 0 14px}
+  .foot-col a{display:block;color:var(--text);font-size:14px;padding:4px 0;transition:.15s}
+  .foot-col a:hover{color:var(--teal)}
+  .foot-bottom{max-width:1160px;margin:36px auto 0;padding-top:24px;border-top:1px solid var(--line);
+    display:flex;justify-content:space-between;gap:20px;flex-wrap:wrap;font-size:12.5px;color:var(--dim2)}
+
+  /* --- Reveal on scroll --- */
+  .reveal{opacity:0;transform:translateY(20px);transition:opacity .8s ease, transform .8s ease}
+  .reveal.on{opacity:1;transform:translateY(0)}
+
+  /* --- Small helper --- */
+  code.i{font:12.5px var(--mono);background:#08090f;border:1px solid var(--line);padding:2px 7px;border-radius:6px;color:var(--teal)}
 </style>
 </head>
 <body>
-<div class="wrap">
-  <div class="brand"><span class="dot">॥</span> Kaali</div>
-  <h1>Watch what your <span class="grad">AI reads and says.</span></h1>
-  <div class="sub">Open-source security for AI agents & apps. Sign in to see your scans and monitor targets 24/7.</div>
 
-  <div class="card">
-    <div class="tab" role="tablist">
-      <button id="tabLogin"  class="on">Sign in</button>
-      <button id="tabSignup">Create account</button>
+<div class="cosmos"></div>
+<div class="stars"></div>
+
+<nav class="top">
+  <div class="nav-inner">
+    <a href="/" class="brand"><span class="dot">॥</span> Kaali</a>
+    <div class="nav-links">
+      <a href="#what">Product</a>
+      <a href="#threats">Threats</a>
+      <a href="#pricing">Pricing</a>
+      <a href="#trust">Trust</a>
+      <a href="https://github.com/starvoxlabs89-design/kaali" target="_blank" rel="noopener">GitHub</a>
+      <a href="/signin.html" class="btn primary">Sign in</a>
     </div>
+  </div>
+</nav>
 
-    <div id="oauth" class="oauth" style="display:none">
-      <a id="btnGoogle" href="/auth/google" style="display:none">
-        <svg width="18" height="18" viewBox="0 0 48 48" aria-hidden="true"><path fill="#EA4335" d="M24 9.5c3.5 0 6.7 1.2 9.2 3.6l6.9-6.9C35.9 2.2 30.3 0 24 0 14.6 0 6.4 5.4 2.5 13.3l8 6.2C12.5 13.4 17.7 9.5 24 9.5z"/><path fill="#4285F4" d="M46.6 24.5c0-1.6-.1-3.2-.4-4.7H24v9h12.7c-.5 2.8-2.1 5.1-4.5 6.7l7 5.4c4.1-3.8 6.4-9.4 6.4-16.4z"/><path fill="#FBBC05" d="M10.5 28.5c-.4-1.3-.7-2.7-.7-4.1 0-1.4.2-2.8.7-4.1l-8-6.2C.9 17.5 0 20.6 0 24s.9 6.5 2.5 9.9l8-5.4z"/><path fill="#34A853" d="M24 48c6.3 0 11.6-2.1 15.5-5.7l-7-5.4c-2 1.4-4.6 2.2-8.5 2.2-6.3 0-11.7-3.9-13.6-9.5l-8 5.4C6.4 42.6 14.6 48 24 48z"/></svg>
-        Continue with Google
-      </a>
-      <a id="btnMeta" href="/auth/meta" style="display:none">
-        <svg width="18" height="18" viewBox="0 0 24 24" aria-hidden="true"><path fill="#1877F2" d="M24 12.07C24 5.4 18.63 0 12 0S0 5.4 0 12.07C0 18.1 4.39 23.09 10.13 24v-8.44H7.08v-3.49h3.05V9.41c0-3.02 1.79-4.7 4.53-4.7 1.32 0 2.7.24 2.7.24v2.98h-1.52c-1.5 0-1.96.93-1.96 1.89v2.26h3.34l-.53 3.49h-2.81V24C19.61 23.09 24 18.1 24 12.07z"/></svg>
-        Continue with Meta
-      </a>
-      <div class="divider">or with email</div>
+<section class="hero">
+  <div class="hero-inner">
+    <span class="kicker">Live in India · Free during beta</span>
+    <h1 class="hero">The demons your AI meets are <em>real.</em><br>Kaali destroys them.</h1>
+    <p class="hero-sub">Open-source security for AI apps, agents, and MCP servers. Scan any URL in seconds. Block prompt injection at runtime. Catch Aadhaar and PAN before they leak. DPDP-native.</p>
+    <div class="hero-cta">
+      <a href="#try" class="btn primary">Try live scan &rarr;</a>
+      <a href="/signin.html" class="btn ghost">Create account</a>
     </div>
-
-    <form id="form" novalidate>
-      <label for="email">Email</label>
-      <input id="email" type="email" autocomplete="email" required placeholder="you@company.in" />
-
-      <label for="password">Password</label>
-      <input id="password" type="password" autocomplete="current-password" required minlength="8" placeholder="min 8 characters" />
-
-      <div id="consentRow" class="row" style="display:none">
-        <input id="consent" type="checkbox" style="width:auto" />
-        <label for="consent" style="margin:0">I agree to the <a href="/privacy.html">Privacy Policy</a> and consent to data processing under DPDP.</label>
+    <div class="chakra">
+      <div class="spokes">
+        <div class="spoke"></div><div class="spoke"></div><div class="spoke"></div><div class="spoke"></div>
+        <div class="spoke"></div><div class="spoke"></div><div class="spoke"></div><div class="spoke"></div>
       </div>
-
-      <button id="submit" type="submit">Sign in</button>
-      <div id="msg"></div>
-    </form>
-
-    <div class="row" id="forgotRow">
-      <a href="#" id="forgotLink">Forgot password?</a>
+      <div class="ring"></div>
+      <div class="ring r2"></div>
+      <div class="ring r3"></div>
+      <div class="ring r4"></div>
+      <div class="core"></div>
     </div>
+    <p class="hero-quote">"या देवी सर्वभूतेषु शक्तिरूपेण संस्थिता" &nbsp;·&nbsp; <strong>The power that resides in all things — turned to watch over your code.</strong></p>
+  </div>
+</section>
 
-    <div class="consent-note">
-      By continuing, you agree to Kaali's <a href="/terms.html">Terms</a> and <a href="/privacy.html">Privacy Policy</a>, and consent to data processing under DPDP §6.
+<section id="try">
+  <div class="container reveal">
+    <h2>Scan any URL. <em>Right here.</em></h2>
+    <p class="lede">Paste a URL and Kaali reads its response headers, HTML, and inline content — checks for OWASP web hygiene and finds AI-attack surface hidden in plain sight. No signup required for this demo.</p>
+    <div class="scanwrap">
+      <div class="scan-row">
+        <input id="scanUrl" placeholder="https://your-site.com" autocomplete="off" spellcheck="false" value="https://example.com">
+        <button class="btn primary" id="scanBtn">Scan</button>
+      </div>
+      <div class="scan-out" id="scanOut">
+        <div style="color:var(--dim);padding:12px 4px;font-size:13.5px">Try <code class="i">example.com</code>, <code class="i">github.com</code>, or your own site. Results appear here.</div>
+      </div>
+      <p style="color:var(--dim);font-size:12.5px;margin:14px 0 0">Sign up for the full toolkit: deployed MCP scans, PII/DPDP checks, LLM prompt-injection probes, and 24/7 monitoring.</p>
     </div>
   </div>
+</section>
 
-  <div class="foot">
-    Kaali is open source (MIT). <a href="https://github.com/starvoxlabs89-design/kaali">GitHub</a> ·
-    <a href="/terms.html">Terms</a> · <a href="/privacy.html">Privacy</a> · <a href="mailto:hello@kaali.io">hello@kaali.io</a>
+<section id="what">
+  <div class="container reveal">
+    <h2>Three surfaces. <em>One stack.</em></h2>
+    <p class="lede">Kaali is open source — MIT — and made of three pieces you can adopt separately. Together they cover the surface every AI app leaves exposed.</p>
+    <div class="pillars">
+      <div class="pillar">
+        <div class="pilliconsvg">◈</div>
+        <h3>Scanner (CLI)</h3>
+        <p><code>npx @kaali/cli scan</code> against a URL, a repo, or an MCP server. Finds missing security headers, hardcoded API keys, exposed Aadhaar / PAN, invisible-Unicode prompt injection, MCP tool-poisoning.</p>
+      </div>
+      <div class="pillar">
+        <div class="pilliconsvg">◆</div>
+        <h3>Guard (runtime)</h3>
+        <p><code>npm i @kaali/guard</code> — inline Express/Next middleware. Blocks prompt injection, decodes hidden Unicode, redacts Indian PII in flight, firewalls MCP tool calls. Two microseconds per request.</p>
+      </div>
+      <div class="pillar">
+        <div class="pilliconsvg">◇</div>
+        <h3>Cloud (24/7)</h3>
+        <p>Hosted dashboard. Continuous monitoring of your registered targets, historical trend charts, DPDP / OWASP-LLM evidence reports, Slack alerts. Free while in beta.</p>
+      </div>
+    </div>
   </div>
-</div>
+</section>
+
+<section id="threats">
+  <div class="container reveal">
+    <h2>What Kaali watches for.</h2>
+    <p class="lede">The threats no observability tool sees. Every one of these is a real attack pattern in 2026 — not a theory.</p>
+    <div class="threats">
+      <div class="threat">
+        <span class="tag">OWASP LLM01</span>
+        <h4>Prompt injection</h4>
+        <p>Direct overrides ("ignore previous…"), role hijacks, delimiter breaks, data-exfil traps.</p>
+      </div>
+      <div class="threat">
+        <span class="tag">GlassWorm class</span>
+        <h4>Invisible-Unicode</h4>
+        <p>Instructions smuggled to AIs in U+E00xx tag chars, zero-width, and bidi overrides — invisible to humans. Kaali decodes them.</p>
+      </div>
+      <div class="threat">
+        <span class="tag">Agentic</span>
+        <h4>MCP tool poisoning</h4>
+        <p>Malicious instructions hidden in Model Context Protocol tool descriptions. Kaali audits deployed MCP servers.</p>
+      </div>
+      <div class="threat">
+        <span class="tag">DPDP §11</span>
+        <h4>Aadhaar / PAN leaks</h4>
+        <p>Personal data spilling through code, logs, or LLM responses. Verhoeff-validated (no false positives).</p>
+      </div>
+      <div class="threat">
+        <span class="tag">Web hygiene</span>
+        <h4>Missing headers &amp; secrets</h4>
+        <p>HSTS, CSP, XFO, XCTO, Referrer-Policy — and OpenAI / AWS / Anthropic keys hardcoded in source.</p>
+      </div>
+      <div class="threat">
+        <span class="tag">Agent runtime</span>
+        <h4>Indirect injection</h4>
+        <p>Poisoned web pages and tool results hijacking your agent (Greshake et al., 2023). Live probes.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="trust">
+  <div class="container reveal">
+    <h2>Built for <em>trust and compliance.</em></h2>
+    <p class="lede">India's DPDP Act enforces May 2027. EU AI Act obligations from Aug 2026. Kaali aligns to both from day one.</p>
+    <div class="compliance">
+      <span class="badge on">DPDP-ready</span>
+      <span class="badge on">OWASP LLM Top 10 (2025)</span>
+      <span class="badge on">ISO 42001-aligned</span>
+      <span class="badge on">Data residency: Mumbai</span>
+      <span class="badge on">MIT open source</span>
+      <span class="badge on">Zero telemetry by default</span>
+    </div>
+  </div>
+</section>
+
+<section id="pricing">
+  <div class="container reveal">
+    <h2>Simple pricing.</h2>
+    <p class="lede">Everything is free during public beta. The scanner and the runtime guard are — and always will be — MIT open source. Cloud pricing kicks in only when you actively upgrade.</p>
+    <div class="plans">
+      <div class="plan">
+        <h3>Open source</h3>
+        <div class="price">₹0<small>/ forever</small></div>
+        <p style="color:var(--dim);font-size:14px;margin:0">The full CLI + guard, MIT license.</p>
+        <ul>
+          <li>8 built-in scanners</li>
+          <li>Runtime guard middleware</li>
+          <li>Vigil Score + SARIF output</li>
+          <li>GitHub Action</li>
+          <li>Self-host anything</li>
+        </ul>
+        <a href="https://github.com/starvoxlabs89-design/kaali" target="_blank" rel="noopener" class="btn">See on GitHub &rarr;</a>
+      </div>
+      <div class="plan featured">
+        <h3>Cloud</h3>
+        <div class="price">₹0<small>/ during beta</small></div>
+        <p style="color:var(--dim);font-size:14px;margin:0">Dashboard + monitoring + evidence.</p>
+        <ul>
+          <li>Everything in open source</li>
+          <li>24/7 continuous monitoring</li>
+          <li>Historical trends + diff alerts</li>
+          <li>DPDP / OWASP evidence PDFs</li>
+          <li>Slack / webhook alerts</li>
+        </ul>
+        <a href="/signin.html" class="btn primary">Create free account &rarr;</a>
+      </div>
+    </div>
+    <p style="text-align:center;color:var(--dim);font-size:13.5px;margin-top:24px">
+      Enterprise (SSO, multi-tenant, on-premise) — <a href="mailto:hello@kaali.io" style="color:var(--blue)">talk to us</a>.
+    </p>
+  </div>
+</section>
+
+<section id="policies">
+  <div class="container reveal">
+    <h2>Policies, in one glance.</h2>
+    <p class="lede">Nothing hidden. Read the full documents linked below — the summary below covers what most people want to know.</p>
+    <div class="policies">
+      <div class="polcard">
+        <h4>Privacy</h4>
+        <p>We don't receive raw prompts or LLM outputs — only the findings and metadata you send us via API key. Personal data lives on servers in Mumbai. Events kept 12 months by default; erasure is one click.</p>
+        <a href="/privacy.html">Read Privacy Policy &rarr;</a>
+      </div>
+      <div class="polcard">
+        <h4>Terms</h4>
+        <p>MIT license carve-out for the CLI + guard. Free during beta. Governed by India law, Mumbai jurisdiction. Liability capped at max(fees paid in 12 months, ₹10,000). No use for unauthorised scanning.</p>
+        <a href="/terms.html">Read Terms of Service &rarr;</a>
+      </div>
+      <div class="polcard">
+        <h4>DPDP compliance</h4>
+        <p>Consent logged at signup with policy version, IP, UA (§6). Right to erasure via dashboard (§12). Grievance officer to be appointed before May 2027 hard-enforcement date. Data-residency: India-only.</p>
+        <a href="/privacy.html#dpdp">DPDP details &rarr;</a>
+      </div>
+      <div class="polcard">
+        <h4>Security</h4>
+        <p>All connections TLS 1.3. Passwords hashed with scrypt (memory-hard). Sessions revocable. API keys hashed at rest. Regular self-scan (Kaali scans Kaali).</p>
+        <a href="mailto:security@kaali.io">Report a vulnerability &rarr;</a>
+      </div>
+      <div class="polcard">
+        <h4>Open source</h4>
+        <p>The scanner and guard are MIT licensed. Threat-intel catalogues are community-PR-updatable. Vulnerabilities are disclosed responsibly; fixes ship as security releases.</p>
+        <a href="https://github.com/starvoxlabs89-design/kaali/blob/main/LICENSE" target="_blank" rel="noopener">MIT License &rarr;</a>
+      </div>
+      <div class="polcard">
+        <h4>Responsible use</h4>
+        <p>Active probes (LLM injection, MCP auth checks) run only against systems you own or have explicit permission to test. Kaali is a defensive tool.</p>
+        <a href="/terms.html#3">Acceptable use &rarr;</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section style="text-align:center;padding-bottom:100px">
+  <div class="container reveal">
+    <h2 style="margin:0 auto 20px;max-width:720px">The goddess who destroys demons.<br><em>The stack that destroys attacks.</em></h2>
+    <div class="hero-cta">
+      <a href="#try" class="btn primary">Scan a URL now</a>
+      <a href="/signin.html" class="btn ghost">Create free account</a>
+    </div>
+  </div>
+</section>
+
+<footer class="site">
+  <div class="foot-grid">
+    <div class="foot-brand">
+      <a href="/" class="brand"><span class="dot">॥</span> Kaali</a>
+      <p>Open-source AI security, made in India. A product of Starvox Labs Pvt Ltd, Mumbai.</p>
+    </div>
+    <div class="foot-col">
+      <h5>Product</h5>
+      <a href="#what">Scanner (CLI)</a>
+      <a href="#what">Guard (runtime)</a>
+      <a href="#what">Cloud dashboard</a>
+      <a href="#pricing">Pricing</a>
+      <a href="https://github.com/starvoxlabs89-design/kaali" target="_blank" rel="noopener">GitHub</a>
+    </div>
+    <div class="foot-col">
+      <h5>Trust</h5>
+      <a href="#trust">Compliance</a>
+      <a href="/privacy.html">Privacy Policy</a>
+      <a href="/terms.html">Terms of Service</a>
+      <a href="mailto:security@kaali.io">Security</a>
+      <a href="mailto:privacy@kaali.io">DPDP contact</a>
+    </div>
+    <div class="foot-col">
+      <h5>Company</h5>
+      <a href="mailto:hello@kaali.io">hello@kaali.io</a>
+      <a href="/signin.html">Sign in</a>
+    </div>
+  </div>
+  <div class="foot-bottom">
+    <div>© 2026 Starvox Labs Pvt Ltd · Mumbai, India</div>
+    <div>Kaali is a defensive tool. Use only on systems you own or have permission to test.</div>
+  </div>
+</footer>
 
 <script>
-const API = window.KAALI_API_URL || "";  // same-origin by default
-let mode = "login";
+// --- Reveal on scroll ---
+const io = new IntersectionObserver(entries => {
+  for (const e of entries) if (e.isIntersecting) { e.target.classList.add('on'); io.unobserve(e.target); }
+}, {rootMargin:'0px 0px -10% 0px', threshold:.05});
+document.querySelectorAll('.reveal').forEach(el => io.observe(el));
+
+// --- Live scan (calls /scan if signed in, else calls a client-side content check) ---
 const $ = id => document.getElementById(id);
+const SEV_ORDER = { critical:5, high:4, medium:3, low:2, info:1 };
 
-function setMode(m){
-  mode = m;
-  $('tabLogin').classList.toggle('on', m==='login');
-  $('tabSignup').classList.toggle('on', m==='signup');
-  $('submit').textContent = m==='login' ? 'Sign in' : 'Create account';
-  $('consentRow').style.display = m==='signup' ? 'flex' : 'none';
-  $('password').autocomplete = m==='login' ? 'current-password' : 'new-password';
-  $('forgotRow').style.display = m==='login' ? 'flex' : 'none';
-  $('msg').innerHTML = '';
-}
-$('tabLogin').onclick = () => setMode('login');
-$('tabSignup').onclick = () => setMode('signup');
-
-function showMsg(kind, text){ $('msg').innerHTML = `<div class="msg ${kind}">${text}</div>`; }
-
-// Success/error pings from the URL
-const params = new URLSearchParams(location.search);
-if (params.get('verified') === '1') showMsg('ok', 'Email verified. Sign in below.');
-if (params.get('oauth_error')) showMsg('err', 'Sign-in with provider failed: ' + params.get('oauth_error').replace(/_/g,' '));
-
-// Reveal OAuth buttons only for providers actually configured on the server.
-fetch(`${API}/auth/providers`).then(r=>r.ok?r.json():{providers:[]}).then(({providers=[]}) => {
-  const g = providers.includes('google'), m = providers.includes('meta');
-  if (g) $('btnGoogle').style.display = 'flex';
-  if (m) $('btnMeta').style.display = 'flex';
-  if (g || m) $('oauth').style.display = 'flex';
-}).catch(()=>{});
-
-$('form').addEventListener('submit', async (e) => {
-  e.preventDefault();
-  const email = $('email').value.trim();
-  const password = $('password').value;
-  const btn = $('submit'); btn.disabled = true;
+async function runScan(){
+  const raw = $('scanUrl').value.trim();
+  if (!raw) return;
+  const url = /^https?:\/\//i.test(raw) ? raw : ('https://' + raw);
+  const btn = $('scanBtn'); btn.disabled = true; btn.textContent = 'Scanning…';
+  $('scanOut').innerHTML = '<div style="color:var(--dim);padding:12px 4px">Reading headers and content…</div>';
   try {
-    if (mode === 'signup'){
-      if (!$('consent').checked){ showMsg('err','Please accept the privacy policy.'); return; }
-      const r = await fetch(`${API}/auth/signup`, {
-        method:'POST', credentials:'include', headers:{'content-type':'application/json'},
-        body: JSON.stringify({ email, password, consent:true }),
-      });
-      const j = await r.json().catch(()=>({}));
-      if (!r.ok) return showMsg('err', j.error || 'Sign-up failed');
-      showMsg('ok', 'Check your email for a verification link.');
-    } else {
-      const r = await fetch(`${API}/auth/login`, {
-        method:'POST', credentials:'include', headers:{'content-type':'application/json'},
-        body: JSON.stringify({ email, password }),
-      });
-      const j = await r.json().catch(()=>({}));
-      if (!r.ok) return showMsg('err', j.error || 'Sign-in failed');
-      location.href = '/dashboard.html';
-    }
-  } catch (err){
-    showMsg('err', 'Network error');
+    const r = await fetch('/scan', {
+      method: 'POST', credentials: 'include',
+      headers: {'content-type':'application/json'},
+      body: JSON.stringify({url})
+    });
+    const j = await r.json().catch(() => ({}));
+    if (r.status === 401) return renderSignInPrompt(url);
+    if (!r.ok) return renderErr(j.error || 'Scan failed');
+    renderResults(j);
+  } catch (e){
+    renderErr(e.message || String(e));
   } finally {
-    btn.disabled = false;
+    btn.disabled = false; btn.textContent = 'Scan';
   }
-});
+}
 
-$('forgotLink').addEventListener('click', async (e) => {
-  e.preventDefault();
-  const email = $('email').value.trim();
-  if (!email){ showMsg('err','Enter your email above first, then click Forgot.'); return; }
-  const r = await fetch(`${API}/auth/forgot`, {
-    method:'POST', credentials:'include', headers:{'content-type':'application/json'},
-    body: JSON.stringify({ email }),
-  });
-  if (r.ok) showMsg('ok', 'If that address exists, a reset link is on its way.');
-});
+function renderSignInPrompt(url){
+  $('scanOut').innerHTML = `
+    <div class="scorehead" style="border-color:var(--blue)">
+      <div style="font-size:20px">🔒</div>
+      <div style="line-height:1.5">
+        <strong>Free live scan requires a Kaali account.</strong><br>
+        <span style="color:var(--dim);font-size:13.5px">Signup takes 30 seconds. Or use the OSS CLI: <code class="i">npx @kaali/cli scan ${url.replace(/&/g,'&amp;').replace(/</g,'&lt;')}</code></span>
+      </div>
+      <a href="/signin.html?next=/dashboard.html" class="btn primary" style="margin-left:auto">Sign in &rarr;</a>
+    </div>`;
+}
+function renderErr(msg){
+  $('scanOut').innerHTML = `<div class="scorehead" style="border-color:var(--crit)"><div style="color:var(--crit);font-weight:600">Scan failed</div><div style="color:var(--dim);font-size:13.5px">${escapeHtml(msg)}</div></div>`;
+}
+function renderResults(r){
+  const col = r.score>=80?'var(--ok)':r.score>=50?'var(--med)':'var(--crit)';
+  const counts = ['critical','high','medium','low','info'].map(s => `${(r.findings||[]).filter(f=>f.severity===s).length} ${s}`).join(' · ');
+  let html = `<div class="scorehead">
+    <div class="score" style="color:${col}">${r.score}<span style="font-size:14px;color:var(--dim)">/100</span></div>
+    <div style="color:var(--dim);font-size:13.5px;line-height:1.55"><strong style="color:var(--text)">${escapeHtml(r.target)}</strong> · HTTP ${r.http_status||'—'}<br>${(r.findings||[]).length} findings — ${counts}</div>
+  </div>`;
+  const findings = (r.findings||[]).slice().sort((a,b)=>(SEV_ORDER[b.severity]||0)-(SEV_ORDER[a.severity]||0));
+  if (findings.length === 0) {
+    html += `<div style="padding:16px;border:1px solid #0e2a1c;background:#06140f;color:var(--ok);border-radius:10px;margin-top:8px">✓ No findings for the checks that ran.</div>`;
+  } else {
+    for (const f of findings.slice(0, 8)) {
+      html += `<div class="find ${f.severity}">
+        <span class="sev ${f.severity}">${f.severity}</span>
+        ${f.owasp ? `<span style="color:var(--dim);font-size:11px">${escapeHtml(f.owasp)}</span>` : ''}
+        <div style="font-weight:600;margin-top:4px">${escapeHtml(f.title)}</div>
+        ${f.detail ? `<div style="color:var(--dim);font-size:13px;margin-top:2px">${escapeHtml(f.detail)}</div>` : ''}
+        ${f.fix ? `<div style="color:var(--ok);font-size:12.5px;margin-top:4px">fix: ${escapeHtml(f.fix)}</div>` : ''}
+      </div>`;
+    }
+    if (findings.length > 8) html += `<div style="color:var(--dim);font-size:13px;padding:12px 4px 0">+ ${findings.length - 8} more findings — <a href="/signin.html" style="color:var(--blue)">sign in for the full report</a></div>`;
+  }
+  $('scanOut').innerHTML = html;
+}
+function escapeHtml(s){ return String(s ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
+
+$('scanBtn').addEventListener('click', runScan);
+$('scanUrl').addEventListener('keydown', e => { if (e.key === 'Enter') runScan(); });
 </script>
+
 </body>
 </html>
