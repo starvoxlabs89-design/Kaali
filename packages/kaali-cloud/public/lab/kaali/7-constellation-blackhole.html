@@ -1,0 +1,480 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="robots" content="noindex,nofollow">
+<title>Kaali #7 — Constellation × Black Hole</title>
+<style>
+  :root{
+    --void:#000; --star:#E8E9F0; --dim:#8A8C9C;
+    --solar:#FFB042; --hot:#A8C8FF; --ember:#FF6B47; --teal:#5eead4; --blue:#38bdf8;
+    --disp:"Futura","Avenir Next Condensed","Arial Narrow",sans-serif;
+    --body:"Avenir Next","Helvetica Neue",Inter,system-ui,sans-serif;
+    --mono:"SF Mono","Menlo",monospace;
+    --serif:'Playfair Display',ui-serif,Georgia,serif;
+    --grad:linear-gradient(135deg,var(--teal),var(--blue));
+  }
+  *{margin:0;padding:0;box-sizing:border-box}
+  body{background:var(--void);color:var(--star);font-family:var(--body);
+    overflow:hidden;height:100vh;cursor:crosshair}
+  #sky{position:fixed;inset:0;z-index:0;width:100%;height:100%;display:block}
+
+  .ui{position:fixed;inset:0;z-index:2;pointer-events:none;display:flex;
+    flex-direction:column;justify-content:space-between;padding:28px clamp(24px,4vw,56px)}
+  .ui a{pointer-events:auto}
+
+  header{display:flex;align-items:flex-start;justify-content:space-between;gap:16px}
+  .wordmark{font-family:var(--disp);font-size:18px;letter-spacing:.14em;font-weight:700;
+    color:var(--star);text-decoration:none;padding:6px 10px;
+    background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);border-radius:8px}
+  .wordmark b{background:var(--grad);-webkit-background-clip:text;background-clip:text;color:transparent;font-weight:700}
+  .kicker{display:inline-flex;align-items:center;gap:8px;padding:6px 12px;border-radius:100px;
+    background:rgba(94,234,212,.08);border:1px solid rgba(94,234,212,.25);
+    color:var(--teal);font-family:var(--mono);font-size:11px;letter-spacing:.2em;text-transform:uppercase;
+    backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px)}
+  .kicker::before{content:"";width:6px;height:6px;border-radius:50%;background:var(--teal);
+    box-shadow:0 0 8px var(--teal);animation:pulse 2s infinite}
+  @keyframes pulse{0%,100%{opacity:1}50%{opacity:.25}}
+
+  .hero{flex:1;display:flex;flex-direction:column;justify-content:flex-end;padding:0 0 12vh 0;
+    align-items:center;text-align:center}
+  h1{font:400 clamp(38px,6vw,72px)/1.02 var(--serif);letter-spacing:-.02em;
+    max-width:20ch;text-shadow:0 8px 40px rgba(0,0,0,.65)}
+  h1 em{font-style:italic;background:var(--grad);-webkit-background-clip:text;background-clip:text;color:transparent}
+  .sub{margin-top:16px;font-size:clamp(15px,1.4vw,17px);max-width:52ch;color:var(--dim);
+    line-height:1.55;text-shadow:0 4px 20px rgba(0,0,0,.7)}
+  .sub strong{color:var(--star);font-weight:600}
+  .row{display:flex;gap:12px;margin-top:26px;flex-wrap:wrap;justify-content:center}
+  .cta{display:inline-flex;align-items:center;gap:8px;padding:12px 20px;border-radius:10px;
+    background:var(--grad);color:#04201c;font-weight:600;font-size:14px;
+    text-decoration:none;box-shadow:0 8px 30px -8px rgba(94,234,212,.45)}
+  .cta.ghost{background:transparent;border:1px solid rgba(255,255,255,.15);color:var(--star);box-shadow:none}
+  .cta.ghost:hover{border-color:var(--teal);color:var(--teal)}
+
+  footer{display:flex;justify-content:space-between;align-items:flex-end;gap:16px;color:var(--dim);
+    font-family:var(--mono);font-size:10.5px;letter-spacing:.14em;text-transform:uppercase}
+  footer .stats{text-align:right}
+  footer .stats span{color:var(--star)}
+</style>
+</head>
+<body>
+<canvas id="sky" aria-hidden="true"></canvas>
+
+<div class="ui">
+  <header>
+    <a href="/lab/kaali/" class="wordmark">KA<b>A</b>LI</a>
+    <div class="kicker">Constellation × Black Hole · Demo #7</div>
+  </header>
+
+  <section class="hero">
+    <h1>The demons your AI meets are <em>real.</em><br>Kaali destroys them.</h1>
+    <p class="sub">Open-source security for AI apps, agents, and MCP servers. <strong>Every threat gets pulled into the singularity.</strong></p>
+    <div class="row">
+      <a class="cta" href="/">Open Kaali &rarr;</a>
+      <a class="cta ghost" href="/lab/kaali/">Other concepts</a>
+    </div>
+  </section>
+
+  <footer>
+    <div>Move cursor · triple-click for supernova</div>
+    <div class="stats">threats destroyed <span id="killed">0</span> · fps <span id="fps">—</span></div>
+  </footer>
+</div>
+
+<script>
+(function(){
+"use strict";
+var canvas = document.getElementById("sky");
+var ctx = canvas.getContext("2d");
+var W = 1, H = 1, DPR = 1, MOB = false;
+
+// --- Star glow sprites (5 temperatures) ---
+function rgb(hex){ return [parseInt(hex.slice(1,3),16), parseInt(hex.slice(3,5),16), parseInt(hex.slice(5,7),16)]; }
+function makeGlow(hex, core){
+  var c = document.createElement("canvas"); c.width = c.height = 64;
+  var g = c.getContext("2d");
+  var v = rgb(hex);
+  var grad = g.createRadialGradient(32,32,0,32,32,32);
+  grad.addColorStop(0, "rgba(255,255,255," + core + ")");
+  grad.addColorStop(0.18, "rgba(" + v[0] + "," + v[1] + "," + v[2] + ",0.85)");
+  grad.addColorStop(0.45, "rgba(" + v[0] + "," + v[1] + "," + v[2] + ",0.26)");
+  grad.addColorStop(1, "rgba(" + v[0] + "," + v[1] + "," + v[2] + ",0)");
+  g.fillStyle = grad; g.fillRect(0,0,64,64);
+  return c;
+}
+function makeNebula(hex){
+  var c = document.createElement("canvas"); c.width = c.height = 256;
+  var g = c.getContext("2d");
+  var v = rgb(hex);
+  var grad = g.createRadialGradient(128,128,0,128,128,128);
+  grad.addColorStop(0, "rgba(" + v[0] + "," + v[1] + "," + v[2] + ",0.22)");
+  grad.addColorStop(0.5, "rgba(" + v[0] + "," + v[1] + "," + v[2] + ",0.08)");
+  grad.addColorStop(1, "rgba(" + v[0] + "," + v[1] + "," + v[2] + ",0)");
+  g.fillStyle = grad; g.fillRect(0,0,256,256);
+  return c;
+}
+var TEMPS = ["#A8C8FF","#CBD8FF","#E8E9F0","#5EEAD4","#38BDF8"];
+var sprites = TEMPS.map(function(h){ return makeGlow(h, 0.92); });
+var solarGlow = makeGlow("#FFB042", 0.85);
+var nebulae = [
+  {img: makeNebula("#5EEAD4"), nx: 0.22, ny: 0.30, sc: 1.35, ph: 0.0},
+  {img: makeNebula("#38BDF8"), nx: 0.74, ny: 0.62, sc: 1.55, ph: 2.1},
+  {img: makeNebula("#A8C8FF"), nx: 0.60, ny: 0.12, sc: 1.05, ph: 4.4}
+];
+
+// --- Stars ---
+var stars = [];
+function buildStars(){
+  var N = MOB ? 120 : 280;
+  stars = [];
+  for (var i = 0; i < N; i++){
+    var tr = Math.random();
+    var temp = tr < 0.30 ? 0 : tr < 0.55 ? 1 : tr < 0.76 ? 2 : tr < 0.93 ? 3 : 4;
+    stars.push({
+      x: Math.random()*W, y: Math.random()*H,
+      sx: Math.random(), sy: Math.random(),
+      dph: Math.random()*6.283, dsp: 0.10 + 0.22*Math.random(), damp: 8 + 18*Math.random(),
+      tw: Math.random()*6.283, tws: 0.6 + 1.9*Math.random(),
+      r: 0.9 + 2.1*Math.random(),
+      temp: temp
+    });
+  }
+}
+
+// --- Constellation line pairs ---
+var pairs = [];
+function buildPairs(){
+  pairs.length = 0;
+  var cell = 100, map = {}, i, k;
+  for (i = 0; i < stars.length; i++){
+    k = ((stars[i].x/cell)|0) + "_" + ((stars[i].y/cell)|0);
+    (map[k] || (map[k] = [])).push(i);
+  }
+  var offs = [[0,0],[1,0],[-1,1],[0,1],[1,1]];
+  for (i = 0; i < stars.length; i++){
+    var s = stars[i], cx = (s.x/cell)|0, cyy = (s.y/cell)|0;
+    for (var o = 0; o < 5; o++){
+      var arr = map[(cx+offs[o][0]) + "_" + (cyy+offs[o][1])];
+      if (!arr) continue;
+      for (var j = 0; j < arr.length; j++){
+        var n = arr[j];
+        if (n <= i) continue;
+        var dx = stars[n].x - s.x, dy = stars[n].y - s.y;
+        if (dx*dx + dy*dy < 8100){
+          pairs.push(i, n);
+          if (pairs.length > 700) return;
+        }
+      }
+    }
+  }
+}
+
+// --- Black hole accretion disc streaks ---
+var NUM_STREAKS = 700;
+var streaks = [];
+for (var si = 0; si < NUM_STREAKS; si++){
+  streaks.push({
+    theta: Math.random() * Math.PI * 2,
+    r:     0.05 + Math.random() * 0.95,
+    speed: 0.35 + Math.random() * 0.75,
+    len:   0.03 + Math.random() * 0.09,
+    bright:0.35 + Math.random() * 0.65,
+  });
+}
+
+// --- Threats ---
+var threats = [];
+var killed = 0;
+function spawnThreat(){
+  if (document.hidden) return;
+  // Spawn from off-screen edges around the black hole center
+  var cx = W * 0.5, cy = H * 0.42;
+  var side = Math.random();
+  var x, y;
+  if (side < 0.25)      { x = -60; y = cy + (Math.random() - 0.5) * H * 0.5; }
+  else if (side < 0.5)  { x = W + 60; y = cy + (Math.random() - 0.5) * H * 0.5; }
+  else if (side < 0.75) { x = cx + (Math.random() - 0.5) * W * 0.7; y = -60; }
+  else                  { x = cx + (Math.random() - 0.5) * W * 0.7; y = cy + H * 0.4; }
+  threats.push({ x: x, y: y, vx: 0, vy: 0, life: 1 });
+}
+setInterval(spawnThreat, 700);
+
+// --- Comets ---
+var comets = [];
+function spawnComet(){
+  if (document.hidden) return;
+  var fromLeft = Math.random() < 0.5;
+  var ang = (Math.random()*0.5 - 0.25) + (fromLeft ? 0 : Math.PI);
+  comets.push({
+    x: fromLeft ? -60 : W + 60,
+    y: H * (0.08 + Math.random()*0.5),
+    vx: Math.cos(ang) * (8 + Math.random()*5),
+    vy: Math.sin(ang) * (8 + Math.random()*5) + 1.5,
+    life: 0, max: 140, temp: (Math.random()*TEMPS.length)|0
+  });
+}
+setInterval(spawnComet, 2200);
+
+// --- Cursor + supernova ---
+var mx = -9999, my = -9999;
+window.addEventListener("mousemove", function(e){ mx = e.clientX; my = e.clientY; }, {passive:true});
+window.addEventListener("mouseleave", function(){ mx = -9999; my = -9999; });
+
+var burst = [], flash = null;
+var clicks = [];
+document.addEventListener("click", function(e){
+  var now = performance.now();
+  clicks.push(now);
+  while (clicks.length && now - clicks[0] > 650) clicks.shift();
+  if (clicks.length >= 3){
+    clicks.length = 0;
+    flash = {x: e.clientX, y: e.clientY, life: 1};
+    for (var k = 0; k < 90; k++){
+      var a = Math.random()*6.283, sp = 2 + Math.random()*9;
+      burst.push({x: e.clientX, y: e.clientY, vx: Math.cos(a)*sp, vy: Math.sin(a)*sp, life: 1, temp: (Math.random()*TEMPS.length)|0});
+    }
+  }
+});
+
+// --- Resize ---
+function resize(){
+  W = window.innerWidth; H = window.innerHeight;
+  DPR = Math.min(2, window.devicePixelRatio || 1);
+  canvas.width = W * DPR; canvas.height = H * DPR;
+  ctx.setTransform(DPR, 0, 0, DPR, 0, 0);
+  var wasMob = MOB;
+  MOB = W < 768;
+  if (!stars.length || wasMob !== MOB) buildStars();
+}
+window.addEventListener("resize", resize);
+resize();
+
+// --- Main draw loop ---
+var frame = 0;
+function draw(t, dt){
+  ctx.clearRect(0, 0, W, H);
+  ctx.globalCompositeOperation = "lighter";
+
+  // Nebulae (subtle background)
+  var m = Math.min(W, H);
+  for (var i = 0; i < nebulae.length; i++){
+    var nb = nebulae[i];
+    var nx = nb.nx*W + Math.sin(t*0.05 + nb.ph)*W*0.04;
+    var ny = nb.ny*H + Math.cos(t*0.04 + nb.ph)*H*0.04;
+    var ns = m * nb.sc;
+    ctx.globalAlpha = 0.35;
+    ctx.drawImage(nb.img, nx - ns/2, ny - ns/2, ns, ns);
+  }
+
+  // Update star positions (drift)
+  var lerp = Math.min(1, 0.085 * dt);
+  for (i = 0; i < stars.length; i++){
+    var s = stars[i];
+    var tx = s.sx*W + Math.sin(t*s.dsp + s.dph)*s.damp;
+    var ty = s.sy*H + Math.cos(t*s.dsp*0.8 + s.dph*1.7)*s.damp;
+    s.x += (tx - s.x)*lerp;
+    s.y += (ty - s.y)*lerp;
+  }
+
+  // Constellation lines
+  if (frame % 12 === 0) buildPairs();
+  ctx.globalAlpha = 1;
+  ctx.lineWidth = 1;
+  ctx.strokeStyle = "rgba(232,233,240,0.04)";
+  ctx.beginPath();
+  for (i = 0; i < pairs.length; i += 2){
+    var sA = stars[pairs[i]], sB = stars[pairs[i+1]];
+    ctx.moveTo(sA.x, sA.y); ctx.lineTo(sB.x, sB.y);
+  }
+  ctx.stroke();
+  // Cursor-brightened lines
+  if (mx > -999){
+    ctx.strokeStyle = "rgba(94,234,212,1)";
+    for (i = 0; i < pairs.length; i += 2){
+      var lA = stars[pairs[i]], lB = stars[pairs[i+1]];
+      var mxx = (lA.x + lB.x)/2 - mx, myy = (lA.y + lB.y)/2 - my;
+      var md2 = mxx*mxx + myy*myy;
+      if (md2 < 48400){
+        ctx.globalAlpha = (1 - Math.sqrt(md2)/220) * 0.35;
+        ctx.beginPath();
+        ctx.moveTo(lA.x, lA.y); ctx.lineTo(lB.x, lB.y);
+        ctx.stroke();
+      }
+    }
+  }
+
+  // Stars (with cursor attraction)
+  for (i = 0; i < stars.length; i++){
+    var s2 = stars[i];
+    var twk = 0.5 + 0.5*Math.sin(t*s2.tws + s2.tw);
+    var ox = 0, oy = 0;
+    var dxp = mx - s2.x, dyp = my - s2.y, d2 = dxp*dxp + dyp*dyp;
+    if (d2 < 25600 && d2 > 1){
+      var d = Math.sqrt(d2), pull = (1 - d/160) * 16;
+      ox = dxp/d*pull; oy = dyp/d*pull;
+    }
+    var sz = s2.r * 6 * (0.75 + 0.35*twk);
+    ctx.globalAlpha = 0.35 + 0.55*twk;
+    ctx.drawImage(sprites[s2.temp], s2.x + ox - sz/2, s2.y + oy - sz/2, sz, sz);
+  }
+
+  // --- BLACK HOLE ---
+  ctx.save();
+  // Center the black hole in the upper-middle area
+  var cx = W * 0.5, cy = H * 0.42;
+  ctx.translate(cx, cy);
+
+  var SCALE = m;
+  var HORIZON_R = SCALE * 0.08;
+  var TILT = 0.30;
+  var DISC_RIM = SCALE * 0.10;
+  var DISC_OUT = SCALE * 0.42;
+  var DISC_RANGE = DISC_OUT - DISC_RIM;
+
+  // Back half of disc
+  for (i = 0; i < streaks.length; i++){
+    var stk = streaks[i];
+    stk.theta += (0.006 * stk.speed) / Math.sqrt(stk.r);
+    var rr = DISC_RIM + stk.r * DISC_RANGE;
+    var yFlat = Math.sin(stk.theta) * rr * TILT;
+    if (yFlat < 0) paintStreak(stk, rr, DISC_RIM, DISC_RANGE, TILT);
+  }
+
+  // Event horizon rim glow (behind horizon)
+  var rimGrd = ctx.createRadialGradient(0, 0, HORIZON_R * 0.9, 0, 0, HORIZON_R * 1.5);
+  rimGrd.addColorStop(0.0, "rgba(255,255,255,0.9)");
+  rimGrd.addColorStop(0.3, "rgba(94,234,212,0.75)");
+  rimGrd.addColorStop(0.7, "rgba(56,189,248,0.28)");
+  rimGrd.addColorStop(1.0, "rgba(56,189,248,0)");
+  ctx.fillStyle = rimGrd;
+  ctx.beginPath(); ctx.arc(0, 0, HORIZON_R * 1.5, 0, Math.PI * 2); ctx.fill();
+
+  // Pure black event horizon (breaks lighter mode)
+  ctx.globalCompositeOperation = "source-over";
+  ctx.fillStyle = "#000";
+  ctx.beginPath();
+  ctx.ellipse(0, 0, HORIZON_R, HORIZON_R * 0.98, 0, 0, Math.PI * 2);
+  ctx.fill();
+  ctx.globalCompositeOperation = "lighter";
+
+  // Front half of disc
+  for (i = 0; i < streaks.length; i++){
+    var stk2 = streaks[i];
+    var rr2 = DISC_RIM + stk2.r * DISC_RANGE;
+    var yFlat2 = Math.sin(stk2.theta) * rr2 * TILT;
+    if (yFlat2 >= 0) paintStreak(stk2, rr2, DISC_RIM, DISC_RANGE, TILT);
+  }
+
+  // Threats (relative to black hole center)
+  for (i = threats.length - 1; i >= 0; i--){
+    var th = threats[i];
+    // Translate to local coords
+    var lx = th.x - cx, ly = th.y - cy;
+    var d3 = Math.hypot(lx, ly);
+    if (d3 < HORIZON_R * 0.85){
+      var gg = ctx.createRadialGradient(lx, ly, 0, lx, ly, 50 * th.life);
+      gg.addColorStop(0, "rgba(255,200,120," + th.life.toFixed(3) + ")");
+      gg.addColorStop(1, "rgba(255,200,120,0)");
+      ctx.fillStyle = gg;
+      ctx.beginPath(); ctx.arc(lx, ly, 50, 0, Math.PI * 2); ctx.fill();
+      th.life *= 0.75;
+      if (th.life < 0.05){ threats.splice(i, 1); killed++; document.getElementById("killed").textContent = killed; }
+      continue;
+    }
+    var nx = -lx / d3, ny = -ly / d3;
+    var pull = 800 / (d3 * d3 + 200);
+    th.vx += (nx - ny * 0.4) * pull;
+    th.vy += (ny + nx * 0.4) * pull;
+    th.vx *= 0.994; th.vy *= 0.994;
+    th.x += th.vx; th.y += th.vy;
+    // Draw threat + trail
+    ctx.globalCompositeOperation = "source-over";
+    ctx.strokeStyle = "rgba(248,113,113,0.55)";
+    ctx.lineWidth = 1.4;
+    ctx.beginPath();
+    ctx.moveTo(lx, ly);
+    ctx.lineTo(lx - th.vx * 4, ly - th.vy * 4);
+    ctx.stroke();
+    ctx.fillStyle = "rgba(255,120,120,0.95)";
+    ctx.beginPath(); ctx.arc(lx, ly, 2.6, 0, Math.PI * 2); ctx.fill();
+    ctx.globalCompositeOperation = "lighter";
+  }
+
+  ctx.restore(); // end black hole translate
+
+  // Comets
+  for (i = comets.length - 1; i >= 0; i--){
+    var c = comets[i];
+    c.x += c.vx*dt; c.y += c.vy*dt; c.life += dt;
+    if (c.life > c.max || c.x < -160 || c.x > W+160 || c.y > H+160){ comets.splice(i,1); continue; }
+    var fade = Math.min(1, (c.max - c.life)/30) * Math.min(1, c.life/8);
+    for (var k2 = 0; k2 < 10; k2++){
+      var trailA = fade * (1 - k2/10) * 0.6;
+      var tsz = 9 - k2*0.7;
+      ctx.globalAlpha = trailA;
+      ctx.drawImage(sprites[c.temp], c.x - c.vx*k2*0.55 - tsz/2, c.y - c.vy*k2*0.55 - tsz/2, tsz, tsz);
+    }
+  }
+
+  // Supernova burst
+  for (i = burst.length - 1; i >= 0; i--){
+    var bp = burst[i];
+    bp.x += bp.vx*dt; bp.y += bp.vy*dt;
+    bp.vx *= Math.pow(0.985, dt); bp.vy *= Math.pow(0.985, dt);
+    bp.life -= 0.012*dt;
+    if (bp.life <= 0){ burst.splice(i,1); continue; }
+    var bsz = 4 + 10*bp.life;
+    ctx.globalAlpha = bp.life;
+    ctx.drawImage(sprites[bp.temp], bp.x - bsz/2, bp.y - bsz/2, bsz, bsz);
+  }
+  if (flash){
+    flash.life -= 0.03*dt;
+    if (flash.life <= 0) flash = null;
+    else {
+      var fsz = m * 0.7 * (1 - flash.life*0.5);
+      ctx.globalAlpha = flash.life * 0.9;
+      ctx.drawImage(solarGlow, flash.x - fsz/2, flash.y - fsz/2, fsz, fsz);
+    }
+  }
+
+  ctx.globalAlpha = 1;
+  ctx.globalCompositeOperation = "source-over";
+  frame++;
+}
+
+function paintStreak(s, r, RIM, RANGE, TILT){
+  var ta = s.theta, tb = s.theta - s.len;
+  var ax = Math.cos(ta) * r, ay = Math.sin(ta) * r * TILT;
+  var bx = Math.cos(tb) * r, by = Math.sin(tb) * r * TILT;
+  var glow = Math.max(0, 1 - (r - RIM) / RANGE);
+  var alpha = Math.min(1, s.bright * (0.28 + glow * 0.85));
+  var R, G, B;
+  if (glow > 0.55)      { R = 255; G = 255; B = 250; }
+  else if (glow > 0.30) { R = 210; G = 245; B = 255; }
+  else                  { R = 130; G = 210; B = 240; }
+  ctx.strokeStyle = "rgba(" + R + "," + G + "," + B + "," + alpha.toFixed(3) + ")";
+  ctx.lineWidth = 0.6 + glow * 1.4;
+  ctx.beginPath();
+  ctx.moveTo(ax, ay);
+  ctx.quadraticCurveTo((ax+bx)/2 + (ay+by)*0.06, (ay+by)/2 - (ax+bx)*0.06, bx, by);
+  ctx.stroke();
+}
+
+var last = performance.now(), fpsN = 0, fpsT = last;
+var fpsEl = document.getElementById("fps");
+function loop(now){
+  var dt = Math.min(50, now - last) / 16.667;
+  last = now;
+  draw(now/1000, dt);
+  fpsN++;
+  if (now - fpsT >= 1000){
+    if (fpsEl) fpsEl.textContent = Math.min(999, Math.round(fpsN * 1000 / (now - fpsT)));
+    fpsN = 0; fpsT = now;
+  }
+  requestAnimationFrame(loop);
+}
+requestAnimationFrame(loop);
+})();
+</script>
+</body>
+</html>
