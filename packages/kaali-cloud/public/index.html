@@ -93,13 +93,14 @@
   .btn.ghost{background:transparent;border:1px solid rgba(255,255,255,.12)}
   @media (max-width:720px){ .nav-links a:not(.btn){display:none} }
 
-  /* --- Full-viewport hero: black hole on top, text cleanly below (no overlap) --- */
-  section.hero{position:relative;z-index:2;min-height:100vh;padding:0;text-align:center;
-    display:grid;grid-template-rows:minmax(45vh,55vh) 1fr;overflow:hidden}
-  .rakshak-hero{position:relative;grid-row:1;width:100%;height:100%;
-    -webkit-mask-image:linear-gradient(180deg, #000 0%, #000 78%, transparent 100%);
-    mask-image:linear-gradient(180deg, #000 0%, #000 78%, transparent 100%)}
+  /* --- Constellation canvas is a FIXED background layer across the whole site --- */
+  .rakshak-hero{position:fixed;inset:0;z-index:0;pointer-events:none}
   #rakshak{position:absolute;inset:0;width:100%;height:100%;display:block}
+
+  /* --- Hero: full viewport, text sits below the black hole area, all above the canvas --- */
+  section.hero{position:relative;z-index:2;min-height:100vh;padding:0;text-align:center;
+    display:grid;grid-template-rows:minmax(45vh,55vh) 1fr;overflow:visible}
+  .hero-canvas-spacer{grid-row:1}
   .hero-vignette{display:none}
   .hero-inner{grid-row:2;position:relative;z-index:3;max-width:960px;margin:0 auto;
     padding:24px 24px 60px;display:flex;flex-direction:column;align-items:center;justify-content:flex-start}
@@ -172,6 +173,14 @@
 
   /* --- Sections --- */
   section{position:relative;z-index:2;padding:80px 24px}
+  /* Sections below the hero get a subtle dark backdrop so content pops
+     against the constellation without hiding it entirely. */
+  section:not(.hero){background:
+    linear-gradient(180deg, rgba(0,0,0,.55) 0%, rgba(0,0,0,.85) 40%, rgba(0,0,0,.85) 60%, rgba(0,0,0,.55) 100%)}
+  /* Ensure cards + panels have solid enough backgrounds — the constellation
+     shouldn't bleed through form inputs or content cards. */
+  .scanwrap,.pillar,.threat,.plan,.polcard,.compliance{background-color:rgba(8,10,18,.92) !important}
+  footer.site{background:linear-gradient(180deg,rgba(0,0,0,.55),rgba(0,0,0,.95))}
   .container{max-width:1160px;margin:0 auto}
   h2{font:600 clamp(28px,4vw,44px)/1.15 var(--serif);letter-spacing:-.01em;margin:0 0 12px}
   h2 em{font-style:italic;background:var(--grad);-webkit-background-clip:text;background-clip:text;color:transparent}
@@ -267,8 +276,8 @@
     display:flex;justify-content:space-between;gap:20px;flex-wrap:wrap;font-size:12.5px;color:var(--dim2)}
 
   /* --- Reveal on scroll --- */
-  .reveal{opacity:0;transform:translateY(20px);transition:opacity .8s ease, transform .8s ease}
-  .reveal.on{opacity:1;transform:translateY(0)}
+  .reveal{opacity:1;transform:none}
+  .reveal.on{opacity:1;transform:none}
 
   /* --- Small helper --- */
   code.i{font:12.5px var(--mono);background:#08090f;border:1px solid var(--line);padding:2px 7px;border-radius:6px;color:var(--teal)}
@@ -295,9 +304,10 @@
   </div>
 </nav>
 
+<div class="rakshak-hero"><canvas id="rakshak"></canvas></div>
+
 <section class="hero">
-  <div class="rakshak-hero"><canvas id="rakshak"></canvas></div>
-  <div class="hero-vignette"></div>
+  <div class="hero-canvas-spacer"></div>
   <div class="hero-inner">
     <span class="kicker">Live in India · Free during beta</span>
     <h1 class="hero">The demons your AI meets are <em>real.</em><br>Kaali destroys them.</h1>
@@ -689,16 +699,15 @@ document.querySelectorAll('.reveal').forEach(el => io.observe(el));
 
   function fit(){
     DPR = Math.min(2, window.devicePixelRatio || 1);
-    var r = parentEl.getBoundingClientRect();
-    canvas.width  = W = Math.max(1, Math.floor(r.width  * DPR));
-    canvas.height = H = Math.max(1, Math.floor(r.height * DPR));
+    W = window.innerWidth; H = window.innerHeight;
+    canvas.width  = Math.max(1, Math.floor(W * DPR));
+    canvas.height = Math.max(1, Math.floor(H * DPR));
     ctx.setTransform(DPR, 0, 0, DPR, 0, 0);
-    W = r.width; H = r.height;
     var wasMob = MOB;
     MOB = W < 768;
     if (!stars.length || wasMob !== MOB) buildStars();
   }
-  var ro = new ResizeObserver(fit); ro.observe(parentEl);
+  window.addEventListener('resize', fit);
   fit();
 
   function paintStreak(s, r, RIM, RANGE, TILT){
@@ -785,16 +794,21 @@ document.querySelectorAll('.reveal').forEach(el => io.observe(el));
       ctx.drawImage(sprites[s2.temp], s2.x + ox - sz/2, s2.y + oy - sz/2, sz, sz);
     }
 
-    // --- BLACK HOLE (centered in canvas) ---
+    // --- BLACK HOLE (anchored to top of page; slides off as you scroll) ---
+    var scrollY = window.scrollY || 0;
+    var bhOpacity = Math.max(0, 1 - scrollY / (H * 0.8));   // fade out over 80vh of scroll
+    if (bhOpacity > 0.02) {
     ctx.save();
-    var cx = W * 0.5, cy = H * 0.5;
+    ctx.globalAlpha = bhOpacity;
+    var cx = W * 0.5, cy = H * 0.42 - scrollY;              // anchored to page, slides up
     ctx.translate(cx, cy);
 
-    var SCALE = m;
-    var HORIZON_R = SCALE * 0.075;
+    // Cap black hole size so accretion disc stays visible/concentrated
+    var SCALE = Math.min(m, 620);
+    var HORIZON_R = SCALE * 0.09;
     var TILT = 0.30;
-    var DISC_RIM = SCALE * 0.095;
-    var DISC_OUT = SCALE * 0.42;
+    var DISC_RIM = SCALE * 0.11;
+    var DISC_OUT = SCALE * 0.30;
     var DISC_RANGE = DISC_OUT - DISC_RIM;
 
     for (i = 0; i < streaks.length; i++){
@@ -859,6 +873,8 @@ document.querySelectorAll('.reveal').forEach(el => io.observe(el));
       ctx.globalCompositeOperation = "lighter";
     }
     ctx.restore();
+    } // end if bhOpacity > 0
+    ctx.globalAlpha = 1;
 
     for (i = comets.length - 1; i >= 0; i--){
       var c = comets[i];
