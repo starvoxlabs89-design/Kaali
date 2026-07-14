@@ -179,7 +179,9 @@ export async function requireUser(req) {
 export async function me(req, res) {
   const u = await requireUser(req);
   if (!u) return json(res, 401, { error: "not signed in" });
-  return json(res, 200, { id: u.id, email: u.email, plan: u.plan });
+  // Look up is_admin (not in the session cookie)
+  const row = await qOne("SELECT is_admin FROM users WHERE id=$1", [u.id]);
+  return json(res, 200, { id: u.id, email: u.email, plan: u.plan, is_admin: !!row?.is_admin });
 }
 
 export async function eraseMe(req, res) {

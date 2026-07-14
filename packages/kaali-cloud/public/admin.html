@@ -1,0 +1,322 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<meta name="robots" content="noindex,nofollow">
+<title>Kaali admin — tracking codes & pixels</title>
+<style>
+  :root{
+    --bg:#000; --panel:#0a0c14; --panel2:#0e1220; --line:#1e2436; --line2:#2a3149;
+    --text:#e6edf3; --dim:#8b97a6; --dim2:#5b6674;
+    --teal:#5eead4; --blue:#38bdf8; --crit:#f87171; --ok:#34d399; --gold:#fbbf24;
+    --grad:linear-gradient(135deg,var(--teal),var(--blue));
+    --mono:ui-monospace,"SF Mono",Menlo,monospace;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--bg);color:var(--text);
+    font-family:Inter,-apple-system,system-ui,sans-serif}
+  header{border-bottom:1px solid var(--line);padding:14px 24px;display:flex;
+    align-items:center;justify-content:space-between;gap:12px}
+  .brand{display:flex;align-items:center;gap:10px;font-weight:700}
+  .brand .dot{width:26px;height:26px;border-radius:8px;background:var(--grad);
+    display:grid;place-items:center;color:#04201c;font-size:14px}
+  .brand .badge{font:600 10px/1 var(--mono);letter-spacing:.14em;text-transform:uppercase;
+    padding:4px 8px;border-radius:6px;background:rgba(251,191,36,.12);
+    color:var(--gold);border:1px solid rgba(251,191,36,.3)}
+  .user{color:var(--dim);font-size:13px;display:flex;align-items:center;gap:14px}
+  .user a{color:var(--dim);text-decoration:underline;cursor:pointer}
+  main{max-width:1200px;margin:0 auto;padding:28px 24px 80px}
+  h1{font-size:26px;margin:0 0 6px}
+  .sub{color:var(--dim);font-size:14px;margin-bottom:22px}
+  .card{background:linear-gradient(180deg,var(--panel),var(--panel2));
+    border:1px solid var(--line);border-radius:14px;padding:18px 20px;margin-bottom:16px}
+  .card h2{margin:0 0 12px;font-size:16px;display:flex;align-items:center;gap:8px}
+  .card h2 .count{font:600 11px/1 var(--mono);color:var(--dim);
+    background:#08090f;border:1px solid var(--line);padding:3px 7px;border-radius:5px}
+
+  button{font:inherit;font-weight:600;border-radius:10px;padding:9px 14px;
+    border:1px solid var(--line);background:var(--panel2);color:var(--text);cursor:pointer}
+  button:hover{border-color:var(--blue)}
+  button.primary{background:var(--grad);color:#04201c;border:none}
+  button.primary:hover{filter:brightness(1.08)}
+  button.danger{color:var(--crit);border-color:rgba(248,113,113,.3)}
+  button.small{padding:5px 10px;font-size:12px;font-weight:500}
+
+  input,select,textarea{width:100%;background:#08090f;border:1px solid var(--line);
+    border-radius:10px;color:var(--text);padding:10px 12px;font:inherit;font-size:14px}
+  textarea{font-family:var(--mono);font-size:13px;line-height:1.55;min-height:120px;resize:vertical}
+  input:focus,select:focus,textarea:focus{outline:none;border-color:var(--blue)}
+  label{display:block;color:var(--dim);font-size:12px;letter-spacing:.06em;
+    text-transform:uppercase;margin:12px 0 6px;font-weight:600}
+  .row{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+  .checkbox{display:flex;align-items:center;gap:8px;margin-top:12px;color:var(--dim);font-size:13px}
+  .checkbox input{width:auto}
+
+  table{width:100%;border-collapse:collapse;font-size:14px}
+  th,td{padding:12px 10px;border-bottom:1px solid var(--line);text-align:left;vertical-align:top}
+  th{color:var(--dim);font-size:11px;letter-spacing:.14em;text-transform:uppercase;font-weight:600}
+  tr:last-child td{border-bottom:none}
+  .snip-name{font-weight:600}
+  .snip-notes{color:var(--dim);font-size:12.5px;margin-top:2px}
+  .snip-code{font-family:var(--mono);font-size:11.5px;color:var(--dim);
+    background:#08090f;border:1px solid var(--line);padding:5px 8px;border-radius:6px;
+    max-width:340px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;margin-top:6px}
+  .tag{display:inline-flex;align-items:center;gap:6px;font:600 10.5px/1 var(--mono);
+    padding:3px 7px;border-radius:5px;text-transform:uppercase;letter-spacing:.08em}
+  .tag.head{background:#0c1f2a;color:var(--blue)}
+  .tag.body-start,.tag.body-end{background:#1a1230;color:#a78bfa}
+  .tag.on{background:#06140f;color:var(--ok);border:1px solid rgba(52,211,153,.3)}
+  .tag.off{background:#1a0e10;color:var(--crit);border:1px solid rgba(248,113,113,.3)}
+  .provider{color:var(--dim);font:500 12px/1 var(--mono);text-transform:uppercase;letter-spacing:.06em}
+
+  #editor{display:none;background:linear-gradient(180deg,var(--panel),var(--panel2));
+    border:1px solid var(--line2);border-radius:14px;padding:22px;margin-bottom:20px;
+    box-shadow:0 24px 60px -30px rgba(0,0,0,.8)}
+  #editor.on{display:block}
+  .editor-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:14px}
+  .editor-head h3{margin:0;font-size:17px}
+  .editor-actions{display:flex;gap:8px;justify-content:flex-end;margin-top:18px}
+
+  .empty{padding:36px;text-align:center;color:var(--dim);font-size:14px}
+  .empty code{background:#08090f;border:1px solid var(--line);padding:2px 7px;
+    border-radius:5px;font-family:var(--mono);font-size:12.5px;color:var(--teal)}
+  .msg{margin-top:10px;padding:9px 12px;border-radius:8px;font-size:13px}
+  .msg.err{background:#1a0e10;color:var(--crit)}
+  .msg.ok{background:#06140f;color:var(--ok)}
+
+  .presets{display:flex;flex-wrap:wrap;gap:6px;margin:6px 0 0}
+  .preset{background:#08090f;border:1px solid var(--line);color:var(--dim);
+    padding:4px 8px;border-radius:6px;font:11px var(--mono);cursor:pointer}
+  .preset:hover{color:var(--gold);border-color:rgba(251,191,36,.3)}
+
+  .audit-row{padding:8px 0;border-bottom:1px solid var(--line);font-size:13px;display:grid;
+    grid-template-columns:130px 1fr auto;gap:12px;color:var(--dim)}
+  .audit-row:last-child{border-bottom:none}
+  .audit-row .when{font-family:var(--mono);font-size:12px}
+  .audit-row .what strong{color:var(--text)}
+</style>
+</head>
+<body>
+<header>
+  <div class="brand">
+    <span class="dot">॥</span> Kaali <span class="badge">ADMIN</span>
+  </div>
+  <div class="user">
+    <a href="/dashboard.html">Dashboard</a>
+    <span id="who">—</span>
+    <a id="logout">Sign out</a>
+  </div>
+</header>
+<main>
+  <h1>Tracking codes &amp; pixels</h1>
+  <div class="sub">Meta tags, Facebook Pixel, Google Analytics, LinkedIn Insight, TikTok Pixel, custom head/body scripts — all injected into the landing page at request time. Edits are live within 5 seconds.</div>
+
+  <div id="editor" class="card">
+    <div class="editor-head">
+      <h3 id="editorTitle">New snippet</h3>
+      <button class="small" id="editorClose">Cancel</button>
+    </div>
+    <div class="row">
+      <div>
+        <label for="fName">Name</label>
+        <input id="fName" placeholder="e.g. Facebook domain verification">
+      </div>
+      <div>
+        <label for="fProvider">Provider</label>
+        <select id="fProvider">
+          <option value="custom">Custom</option>
+          <option value="meta-pixel">Meta / Facebook Pixel</option>
+          <option value="google-analytics">Google Analytics 4</option>
+          <option value="google-ads">Google Ads</option>
+          <option value="linkedin">LinkedIn Insight</option>
+          <option value="tiktok">TikTok Pixel</option>
+        </select>
+      </div>
+    </div>
+    <div class="row">
+      <div>
+        <label for="fPosition">Position</label>
+        <select id="fPosition">
+          <option value="head">&lt;head&gt;</option>
+          <option value="body-start">Just after &lt;body&gt;</option>
+          <option value="body-end">Just before &lt;/body&gt;</option>
+        </select>
+      </div>
+      <div>
+        <label for="fTargets">Pages (comma-separated, <code style="color:var(--teal);font-family:var(--mono)">*</code> for all)</label>
+        <input id="fTargets" placeholder="/,/signin.html" value="*">
+      </div>
+    </div>
+    <label for="fCode">Code — HTML / meta / script</label>
+    <textarea id="fCode" placeholder='&lt;meta name="facebook-domain-verification" content="..." /&gt;'></textarea>
+    <div class="presets">
+      <button class="preset" data-preset="fb-verify">Load: Meta domain verify</button>
+      <button class="preset" data-preset="fb-pixel">Load: Meta Pixel</button>
+      <button class="preset" data-preset="ga4">Load: GA4</button>
+      <button class="preset" data-preset="linkedin">Load: LinkedIn Insight</button>
+    </div>
+    <label for="fNotes" style="margin-top:14px">Notes (optional)</label>
+    <input id="fNotes" placeholder="Internal note about why this is here / when to remove">
+    <div class="checkbox"><input id="fEnabled" type="checkbox" checked> Enabled — inject on requests immediately</div>
+    <div id="editorMsg"></div>
+    <div class="editor-actions">
+      <button id="editorSave" class="primary">Save snippet</button>
+    </div>
+  </div>
+
+  <div class="card">
+    <h2>
+      Snippets <span class="count" id="snippetsCount">0</span>
+      <div style="margin-left:auto"><button class="primary" id="addNew">+ New snippet</button></div>
+    </h2>
+    <div id="snippetsList"></div>
+  </div>
+
+  <div class="card">
+    <h2>Recent audit events <span class="count" id="auditCount">0</span></h2>
+    <div id="auditList" class="empty">Loading…</div>
+  </div>
+</main>
+
+<script>
+const $ = id => document.getElementById(id);
+const j = (u, o={}) => fetch(u, {credentials:'include', ...o}).then(async r => {
+  const b = await r.json().catch(()=>({}));
+  if (!r.ok) throw Object.assign(new Error(b.error || r.status), {status:r.status, body:b});
+  return b;
+});
+const esc = s => String(s??'').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const fmt = t => t ? new Date(t).toLocaleString() : '—';
+
+const PRESETS = {
+  'fb-verify': { name: 'Facebook domain verification', provider: 'meta-pixel', position: 'head', targets:'*',
+    code: '<meta name="facebook-domain-verification" content="YOUR_CODE_HERE" />' },
+  'fb-pixel':  { name: 'Meta Pixel', provider: 'meta-pixel', position: 'head', targets:'*',
+    code: '<!-- Meta Pixel Code -->\n<script>\n!function(f,b,e,v,n,t,s){if(f.fbq)return;n=f.fbq=function(){n.callMethod?\nn.callMethod.apply(n,arguments):n.queue.push(arguments)};if(!f._fbq)f._fbq=n;\nn.push=n;n.loaded=!0;n.version=\'2.0\';n.queue=[];t=b.createElement(e);t.async=!0;\nt.src=v;s=b.getElementsByTagName(e)[0];s.parentNode.insertBefore(t,s)}(window,\ndocument,\'script\',\'https://connect.facebook.net/en_US/fbevents.js\');\nfbq(\'init\', \'YOUR_PIXEL_ID\');\nfbq(\'track\', \'PageView\');\n<' + '/script>\n<noscript><img height="1" width="1" style="display:none" src="https://www.facebook.com/tr?id=YOUR_PIXEL_ID&ev=PageView&noscript=1"/></noscript>\n<!-- End Meta Pixel Code -->' },
+  'ga4': { name: 'Google Analytics 4', provider: 'google-analytics', position: 'head', targets:'*',
+    code: '<!-- Google tag (gtag.js) -->\n<script async src="https://www.googletagmanager.com/gtag/js?id=G-XXXXXXXXXX"><' + '/script>\n<script>\n  window.dataLayer = window.dataLayer || [];\n  function gtag(){dataLayer.push(arguments);}\n  gtag(\'js\', new Date());\n  gtag(\'config\', \'G-XXXXXXXXXX\');\n<' + '/script>' },
+  'linkedin': { name: 'LinkedIn Insight', provider: 'linkedin', position: 'body-end', targets:'*',
+    code: '<script type="text/javascript">\n_linkedin_partner_id = "YOUR_PARTNER_ID";\nwindow._linkedin_data_partner_ids = window._linkedin_data_partner_ids || [];\nwindow._linkedin_data_partner_ids.push(_linkedin_partner_id);\n<' + '/script>\n<script type="text/javascript">\n(function(l){if(!l){window.lintrk = function(a,b){window.lintrk.q.push([a,b])};\nwindow.lintrk.q=[]}var s = document.getElementsByTagName("script")[0];\nvar b = document.createElement("script");b.type = "text/javascript";b.async = true;\nb.src = "https://snap.licdn.com/li.lms-analytics/insight.min.js";\ns.parentNode.insertBefore(b, s);})(window.lintrk);\n<' + '/script>' },
+};
+
+let editingId = null;
+
+function openEditor(snippet){
+  editingId = snippet?.id || null;
+  $('editorTitle').textContent = editingId ? 'Edit snippet' : 'New snippet';
+  $('fName').value = snippet?.name || '';
+  $('fProvider').value = snippet?.provider || 'custom';
+  $('fPosition').value = snippet?.position || 'head';
+  $('fTargets').value = (snippet?.targets || ['*']).join(',');
+  $('fCode').value = snippet?.code || '';
+  $('fNotes').value = snippet?.notes || '';
+  $('fEnabled').checked = snippet?.enabled ?? true;
+  $('editorMsg').innerHTML = '';
+  $('editor').classList.add('on');
+  $('editor').scrollIntoView({behavior:'smooth', block:'start'});
+}
+function closeEditor(){ $('editor').classList.remove('on'); editingId = null; }
+$('addNew').onclick = () => openEditor(null);
+$('editorClose').onclick = closeEditor;
+
+document.querySelectorAll('.preset').forEach(btn => btn.onclick = () => {
+  const p = PRESETS[btn.dataset.preset]; if (!p) return;
+  $('fName').value = p.name; $('fProvider').value = p.provider;
+  $('fPosition').value = p.position; $('fTargets').value = p.targets; $('fCode').value = p.code;
+});
+
+$('editorSave').onclick = async () => {
+  const payload = {
+    name: $('fName').value.trim(),
+    provider: $('fProvider').value,
+    position: $('fPosition').value,
+    targets: $('fTargets').value.split(',').map(s => s.trim()).filter(Boolean),
+    code: $('fCode').value,
+    notes: $('fNotes').value.trim() || null,
+    enabled: $('fEnabled').checked,
+  };
+  $('editorMsg').innerHTML = '';
+  $('editorSave').disabled = true;
+  try {
+    if (editingId) await j('/admin/snippets/' + editingId, {method:'PATCH', headers:{'content-type':'application/json'}, body: JSON.stringify(payload)});
+    else await j('/admin/snippets', {method:'POST', headers:{'content-type':'application/json'}, body: JSON.stringify(payload)});
+    $('editorMsg').innerHTML = '<div class="msg ok">Saved. Injecting on next request.</div>';
+    await refreshSnippets();
+    setTimeout(closeEditor, 700);
+  } catch (e) {
+    $('editorMsg').innerHTML = '<div class="msg err">' + esc(e.message || 'Save failed') + '</div>';
+  } finally { $('editorSave').disabled = false; }
+};
+
+async function refreshSnippets(){
+  const {snippets} = await j('/admin/snippets');
+  $('snippetsCount').textContent = snippets.length;
+  if (!snippets.length){
+    $('snippetsList').innerHTML = '<div class="empty">No snippets yet. Click <code>+ New snippet</code> to add Meta pixel, GA4, or a custom head tag.</div>';
+    return;
+  }
+  const html = ['<table><thead><tr><th>Name</th><th>Provider</th><th>Position</th><th>Targets</th><th>State</th><th></th></tr></thead><tbody>'];
+  for (const s of snippets) {
+    html.push('<tr>');
+    html.push('<td><div class="snip-name">' + esc(s.name) + '</div>');
+    if (s.notes) html.push('<div class="snip-notes">' + esc(s.notes) + '</div>');
+    html.push('<div class="snip-code">' + esc(s.code.split('\n')[0].slice(0, 80)) + (s.code.length > 80 ? '…' : '') + '</div></td>');
+    html.push('<td class="provider">' + esc(s.provider) + '</td>');
+    html.push('<td><span class="tag ' + s.position + '">' + esc(s.position) + '</span></td>');
+    html.push('<td><span class="provider">' + esc((s.targets||[]).join(', ')) + '</span></td>');
+    html.push('<td><span class="tag ' + (s.enabled ? 'on' : 'off') + '">' + (s.enabled ? 'On' : 'Off') + '</span></td>');
+    html.push('<td style="text-align:right;white-space:nowrap">'
+      + '<button class="small" data-edit="' + s.id + '">Edit</button> '
+      + '<button class="small" data-toggle="' + s.id + '">' + (s.enabled ? 'Disable' : 'Enable') + '</button> '
+      + '<button class="small danger" data-del="' + s.id + '">Delete</button></td>');
+    html.push('</tr>');
+  }
+  html.push('</tbody></table>');
+  $('snippetsList').innerHTML = html.join('');
+  $('snippetsList').querySelectorAll('[data-edit]').forEach(b => b.onclick = () => openEditor(snippets.find(x => x.id == b.dataset.edit)));
+  $('snippetsList').querySelectorAll('[data-toggle]').forEach(b => b.onclick = async () => {
+    await j('/admin/snippets/' + b.dataset.toggle + '/toggle', {method:'POST'});
+    refreshSnippets(); refreshAudit();
+  });
+  $('snippetsList').querySelectorAll('[data-del]').forEach(b => b.onclick = async () => {
+    if (!confirm('Delete this snippet? It stops injecting immediately.')) return;
+    await j('/admin/snippets/' + b.dataset.del, {method:'DELETE'});
+    refreshSnippets(); refreshAudit();
+  });
+}
+
+async function refreshAudit(){
+  const {events} = await j('/admin/audit?limit=20');
+  $('auditCount').textContent = events.length;
+  if (!events.length){ $('auditList').innerHTML = '<div class="empty">No audit events yet.</div>'; return; }
+  $('auditList').innerHTML = events.map(e =>
+    '<div class="audit-row">'
+      + '<div class="when">' + fmt(e.created_at) + '</div>'
+      + '<div class="what"><strong>' + esc(e.action) + '</strong> · ' + esc(e.snippet_name || '(deleted)') + '<br>'
+      + '<span style="font-size:12px">by ' + esc(e.actor_email || 'unknown') + '</span></div>'
+      + '<div class="when">' + esc(e.ip || '') + '</div>'
+    + '</div>'
+  ).join('');
+}
+
+$('logout').onclick = async () => {
+  await j('/auth/logout', {method:'POST'}).catch(()=>{});
+  location.href = '/';
+};
+
+async function boot(){
+  try {
+    const me = await j('/me');
+    if (!me.is_admin) { document.body.innerHTML = '<main style="padding:60px 24px"><h1>403 — admin only</h1><p style="color:var(--dim)">Your account isn\'t an admin. If this is wrong, sign in as the admin email or ask an existing admin to promote you.</p><p><a href="/dashboard.html" style="color:var(--teal)">← Back to dashboard</a></p></main>'; return; }
+    $('who').textContent = me.email;
+    await Promise.all([refreshSnippets(), refreshAudit()]);
+  } catch (e) {
+    if (e.status === 401) { location.href = '/signin.html?next=/admin.html'; return; }
+    document.body.innerHTML = '<main style="padding:60px 24px"><h1>Error</h1><p>' + esc(e.message) + '</p></main>';
+  }
+}
+boot();
+</script>
+</body>
+</html>
