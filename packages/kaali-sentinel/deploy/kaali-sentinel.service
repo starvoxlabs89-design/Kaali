@@ -1,0 +1,10 @@
+[Unit]
+Description=Kaali Sentinel — host compromise scan
+After=network.target
+
+[Service]
+Type=oneshot
+# Edit paths + set your Kaali Cloud key:
+ExecStart=/usr/bin/node /opt/kaali/kaali/packages/kaali-sentinel/host-scan.js --cloud-key REPLACE_WITH_KAALI_KEY --allow /opt/kaali/kaali/packages/kaali-sentinel/allow.json
+Nice=10
+IOSchedulingClass=idle

@@ -1,0 +1,6 @@
+{
+  "users": ["kaali", "deploy"],
+  "ssh_key_fingerprints": [],
+  "listen_ports": [22, 80, 443, 5432, 4842],
+  "systemd_units": ["kaali-cloud.service"]
+}
