@@ -269,6 +269,185 @@ function scanLogs() {
 }
 
 // =====================================================================
+// 7. DEEP — PAM backdoors, sudoers, kernel modules, shell-init, at/timers,
+//    MOTD hooks, immutable implants, reverse shells, webshells, hidden execs,
+//    recently-modified system binaries.  (the "deep scan")
+// =====================================================================
+
+// 7a. PAM backdoors — the Plague / PamDOORa / Quasar class
+function scanPAM() {
+  // pam config lines that call external programs or unknown modules
+  const dir = "/etc/pam.d";
+  let files = [];
+  try { files = fs.readdirSync(dir); } catch { return; }
+  for (const f of files) {
+    const c = readFileSafe(`${dir}/${f}`);
+    if (!c) continue;
+    for (const line of c.split("\n")) {
+      const l = line.trim();
+      if (!l || l.startsWith("#")) continue;
+      if (/pam_exec\.so/.test(l) && /(\/tmp|\/dev\/shm|\.sh|curl|wget|nc\b)/.test(l))
+        finding("critical", `PAM pam_exec backdoor in ${dir}/${f}`, "A PAM rule runs an external script on auth — used to log passwords or grant hidden access.", l.slice(0, 160), "Remove the pam_exec line; investigate the script it calls.");
+      // reference to a PAM module outside standard security dirs
+      const mod = l.match(/\s(\/\S+\.so)\b/);
+      if (mod && !/^\/(lib|usr\/lib|lib64|usr\/lib64)/.test(mod[1]))
+        finding("critical", `PAM module from a non-standard path in ${f}`, "A PAM stack references a .so outside system library dirs — classic PAM rootkit.", mod[1], "This is almost certainly malicious. Capture the .so and rebuild.");
+    }
+  }
+  // unknown / recently-modified PAM .so modules
+  for (const secdir of ["/lib/x86_64-linux-gnu/security", "/lib/security", "/lib64/security", "/usr/lib/x86_64-linux-gnu/security"]) {
+    let mods = [];
+    try { mods = fs.readdirSync(secdir); } catch { continue; }
+    for (const m of mods) {
+      try {
+        const st = fs.statSync(`${secdir}/${m}`);
+        const ageDays = (Date.now() - st.mtimeMs) / 86400000;
+        if (ageDays < 60)
+          finding("high", `Recently-modified PAM module: ${secdir}/${m}`, `PAM module changed ${ageDays.toFixed(1)} days ago — verify it came from a package update, not an attacker.`, null, `Check ownership: dpkg -S ${secdir}/${m}`);
+      } catch { /* */ }
+    }
+  }
+}
+
+// 7b. Sudoers — NOPASSWD backdoors
+function scanSudoers() {
+  const files = ["/etc/sudoers"];
+  try { for (const f of fs.readdirSync("/etc/sudoers.d")) files.push(`/etc/sudoers.d/${f}`); } catch { /* */ }
+  for (const p of files) {
+    const c = readFileSafe(p);
+    if (!c) continue;
+    for (const line of c.split("\n")) {
+      const l = line.trim();
+      if (!l || l.startsWith("#")) continue;
+      if (/NOPASSWD:\s*ALL/i.test(l) && !/^%sudo|^%admin|^root\b/.test(l))
+        finding("high", `Passwordless sudo grant in ${p}`, "A user/group can run anything as root with no password — a common privilege backdoor.", l.slice(0, 140), `Verify you added this. If not, remove the line from ${p}.`);
+    }
+  }
+}
+
+// 7c. Kernel modules — rootkits
+function scanKernelModules() {
+  const out = sh("lsmod 2>/dev/null");
+  if (!out) return;
+  for (const line of out.split("\n").slice(1)) {
+    const name = line.trim().split(/\s+/)[0];
+    if (!name) continue;
+    // module with no backing file on disk = hidden/injected
+    const info = sh(`modinfo ${name} 2>/dev/null`);
+    if (info && !/filename:/.test(info))
+      finding("critical", `Loaded kernel module with no on-disk file: ${name}`, "A kernel module is loaded but has no filename — a strong rootkit indicator.", name, "Treat the kernel as compromised. Rebuild; do not trust this box.");
+    if (/\b(diamorphine|reptile|azazel|beurk|jynx|kbeast|suterusu)\b/i.test(name))
+      finding("critical", `Known rootkit kernel module: ${name}`, "Module name matches a known LKM rootkit family.", name, "Full rebuild required.");
+  }
+}
+
+// 7d. Shell-init persistence
+function scanShellInit() {
+  const targets = ["/etc/bash.bashrc", "/etc/profile"];
+  try { for (const f of fs.readdirSync("/etc/profile.d")) targets.push(`/etc/profile.d/${f}`); } catch { /* */ }
+  const homes = ["/root"];
+  try { for (const d of fs.readdirSync("/home")) homes.push(`/home/${d}`); } catch { /* */ }
+  for (const h of homes) for (const rc of [".bashrc", ".bash_profile", ".profile", ".zshrc", ".bash_login"]) targets.push(`${h}/${rc}`);
+  for (const p of targets) {
+    const c = readFileSafe(p);
+    if (!c) continue;
+    for (const line of c.split("\n")) {
+      const l = line.trim();
+      if (!l || l.startsWith("#")) continue;
+      if (/(curl|wget)\b.*\|\s*(sh|bash)|\/dev\/tcp\/|base64\s+-d|\/dev\/shm|nc\s+-e|bash\s+-i|python.*socket/.test(l))
+        finding("high", `Suspicious shell-init line in ${p}`, "A login/shell rc file runs a download-exec or reverse-shell payload every session.", l.slice(0, 140), `Remove the line from ${p}.`);
+    }
+  }
+}
+
+// 7e. Extra schedulers — at jobs + systemd timers
+function scanScheduledExtra() {
+  const at = sh("atq 2>/dev/null");
+  if (at && at.trim())
+    finding("medium", "Pending 'at' jobs exist", "The 'at' scheduler has queued jobs — a less-watched persistence channel.", at.trim().slice(0, 200), "Review with: for j in $(atq|awk '{print $1}'); do at -c $j; done");
+  const timers = sh("systemctl list-timers --all --no-legend --no-pager 2>/dev/null");
+  for (const line of timers.split("\n")) {
+    const unit = (line.trim().split(/\s+/).pop() || "");
+    if (unit.endsWith(".timer") && !ALLOW.systemd_units.includes(unit)) {
+      const svc = unit.replace(/\.timer$/, ".service");
+      const exec = sh(`systemctl show -p ExecStart --value ${svc} 2>/dev/null`).trim();
+      if (/\/tmp\/|\/dev\/shm|curl|wget|base64|\/home\/[^/]+\/\./.test(exec))
+        finding("critical", `Suspicious systemd timer: ${unit}`, "A timer triggers a service running from a suspicious location.", exec.slice(0, 140), `systemctl disable --now ${unit}`);
+    }
+  }
+}
+
+// 7f. MOTD / login hooks
+function scanMOTD() {
+  for (const dir of ["/etc/update-motd.d"]) {
+    let files = [];
+    try { files = fs.readdirSync(dir); } catch { continue; }
+    for (const f of files) {
+      const c = readFileSafe(`${dir}/${f}`);
+      if (c && /(curl|wget|\/tmp\/|\/dev\/shm|base64|nc\s+-e|\/dev\/tcp)/.test(c))
+        finding("high", `Suspicious MOTD script: ${dir}/${f}`, "MOTD scripts run on every login — a stealthy execution trigger.", (c.match(/.*(curl|wget|base64|nc|dev\/tcp).*/) || [""])[0].slice(0, 140), `Review/remove ${dir}/${f}.`);
+    }
+  }
+}
+
+// 7g. Immutable files — attackers chattr +i their implants
+function scanImmutable() {
+  const out = sh("lsattr -R /etc /root /usr/local/bin /tmp /dev/shm 2>/dev/null | grep -E '^....i' 2>/dev/null");
+  for (const line of (out || "").split("\n")) {
+    if (!line.trim()) continue;
+    finding("high", "Immutable (chattr +i) file", "Attackers set files immutable so you can't delete their backdoor. Legit on very few files.", line.trim().slice(0, 160), "Inspect it; if malicious: chattr -i <file> then remove.");
+  }
+}
+
+// 7h. Reverse-shell processes
+function scanReverseShell() {
+  const ps = sh("ps -eo pid,args --no-headers 2>/dev/null");
+  for (const line of ps.split("\n")) {
+    if (/\/dev\/tcp\/|bash\s+-i|nc\s+-e|ncat\s+-e|socat\b.*exec|python.*socket.*subprocess|perl.*socket|\bsh\s+-i\b/.test(line))
+      finding("critical", "Possible reverse shell / C2 process", "A running process matches a reverse-shell / remote-control pattern.", line.trim().slice(0, 160), "Identify the PID + parent, capture, then kill. Find its persistence.");
+  }
+}
+
+// 7i. Webshells in served web roots
+function scanWebshells() {
+  const roots = ["/var/www", "/usr/share/nginx", "/opt/kaali/kaali/packages/kaali-cloud/public"];
+  const bad = /(eval\s*\(\s*(base64_decode|gzinflate|\$_(POST|GET|REQUEST))|passthru\s*\(|shell_exec\s*\(|assert\s*\(\s*\$_|preg_replace\s*\(.*\/e|system\s*\(\s*\$_)/;
+  const walk = (dir, depth) => {
+    if (depth > 6) return;
+    let entries = [];
+    try { entries = fs.readdirSync(dir, { withFileTypes: true }); } catch { return; }
+    for (const e of entries) {
+      const p = `${dir}/${e.name}`;
+      if (e.isDirectory()) { if (e.name !== "node_modules" && e.name !== ".git") walk(p, depth + 1); }
+      else if (/\.(php|phtml|phar|jsp|asp|aspx)$/i.test(e.name)) {
+        const c = readFileSafe(p);
+        if (c && bad.test(c))
+          finding("critical", `Possible webshell: ${p}`, "A web-served file contains an obfuscated code-execution pattern.", (c.match(bad) || [""])[0].slice(0, 100), "Quarantine + delete; check web-server access logs for how it was uploaded.");
+      }
+    }
+  };
+  for (const r of roots) walk(r, 0);
+}
+
+// 7j. Hidden executables in temp/system dirs
+function scanHidden() {
+  const out = sh("find /tmp /dev/shm /var/tmp /etc -type f \\( -name '.*' -o -perm -111 \\) 2>/dev/null");
+  for (const p of (out || "").split("\n")) {
+    if (!p.trim()) continue;
+    if (/\/(tmp|dev\/shm|var\/tmp)\//.test(p) && /\.(sh|py|pl|elf|bin)$|\/\.[^/]+$/.test(p))
+      finding("medium", `Hidden/executable file in temp dir: ${p}`, "Executables or dotfiles in world-writable temp dirs are a common malware staging spot.", p, "Inspect before deleting; correlate with running processes.");
+  }
+}
+
+// 7k. Recently-modified system binaries (trojaned binaries)
+function scanRecentBinaries() {
+  const out = sh("find /bin /sbin /usr/bin /usr/sbin -type f -mtime -30 2>/dev/null");
+  const lines = (out || "").split("\n").filter(Boolean);
+  if (lines.length)
+    finding("medium", `${lines.length} system binaries modified in the last 30 days`, "Trojaned core binaries (ls, ps, sshd, etc.) are a rootkit technique. Some may be legit package updates — verify.", lines.slice(0, 8).map((p) => p.split("/").pop()).join(", ") + (lines.length > 8 ? " …" : ""), "Verify integrity: debsums -c 2>/dev/null (Debian/Ubuntu) or rpm -Va.");
+}
+
+// =====================================================================
 // run + report
 // =====================================================================
 function run() {
@@ -276,6 +455,11 @@ function run() {
   const mods = [
     ["users", scanUsers], ["ssh", scanSSH], ["persistence", scanPersistence],
     ["runtime", scanRuntime], ["files", scanFiles], ["logs", scanLogs],
+    // deep modules
+    ["pam", scanPAM], ["sudoers", scanSudoers], ["kernel-modules", scanKernelModules],
+    ["shell-init", scanShellInit], ["schedulers", scanScheduledExtra], ["motd", scanMOTD],
+    ["immutable", scanImmutable], ["reverse-shell", scanReverseShell],
+    ["webshells", scanWebshells], ["hidden", scanHidden], ["recent-binaries", scanRecentBinaries],
   ];
   for (const [name, fn] of mods) {
     try { fn(); } catch (e) { finding("info", `Scanner '${name}' errored`, String(e.message || e)); }
